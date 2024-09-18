@@ -1,59 +1,97 @@
 ﻿#include <iostream>
+#include <windows.h>
 using namespace std;
 
 int main()
 {
-    int Inumber;
+    int Inumber, elCount = 0;
     union {
         float Fnumber;
-        int FnumberInInteger;
+        int FcellInInt;
     };
-    double Dnumber;
-    unsigned int mask = 1;
-    mask <<= 31;
+    union {
+        double Dnumber;
+        int DcellInArrInt[sizeof(double) / sizeof(int)];
+    };
+    unsigned int mask;
+
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+
     setlocale(0, "");
-    cout << "int: " << sizeof(int) << " bytes\n";
-    cout << "short int: " << sizeof(short int) << " bytes\n";
-    cout << "long int: " << sizeof(long int) << " bytes\n";
-    cout << "float: " << sizeof(float) << " bytes\n";
-    cout << "double: " << sizeof(double) << " bytes\n";
-    cout << "long double: " << sizeof(long double) << " bytes\n";
-    cout << "char : " << sizeof(char) << " bytes\n";
-    cout << "bool: " << sizeof(bool) << " bytes\n";
-    
-    cout << "Введите типа int: ";
-    cin >> Inumber;
+
+    cout << "int: " << sizeof(int) << " bytes" << endl;
+    cout << "short int: " << sizeof(short int) << " bytes" << endl;
+    cout << "long int: " << sizeof(long int) << " bytes" << endl;
+    cout << "float: " << sizeof(float) << " bytes" << endl;
+    cout << "double: " << sizeof(double) << " bytes" << endl;
+    cout << "long double: " << sizeof(long double) << " bytes" << endl;
+    cout << "char : " << sizeof(char) << " bytes" << endl;
+    cout << "bool: " << sizeof(bool) << " bytes" << endl;
     cout << endl;
 
-    for (int i = 1; i < 33; ++i) {
-        if (mask & Inumber) {
-            cout << '1';
-        }
-        else {
-            cout << '0';
-        }
-        if (i == 1 || i % 8 == 0) {
-            cout << ' ';
-        }
-        mask >>= 1;
-    }
+    cout << "Введите переменную типа int: ";
+    cin >> Inumber;
     cout << endl;
-    cout << "Введите типа float: ";
+    mask = 1;
+    mask <<= 31;
+
+    SetConsoleTextAttribute(handle, FOREGROUND_RED);
+    for (int i = 1; i < sizeof(int) * 8 + 1; ++i, mask >>= 1) {
+        mask & Inumber ? putchar('1') : putchar('0');
+        if (i == 1 || i % 8 == 0) {
+            SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
+            putchar(' ');
+        }
+    }
+    cout << endl << endl;
+    SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+
+    cout << "Введите переменную типа float: ";
     cin >> Fnumber;
     cout << endl;
     mask = 1;
     mask <<= 31;
-    for (int i = 1; i < 33; ++i) {
-        if (mask & FnumberInInteger) {
-            cout << '1';
+
+    SetConsoleTextAttribute(handle, FOREGROUND_RED);
+    for (int i = 1; i < sizeof(float) * 8 + 1; ++i, mask >>= 1) {
+        mask & FcellInInt ? putchar('1') : putchar('0');
+        if (i < (sizeof(float) / 4 * 8 + 1)) {
+            SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
         }
-        else {
-            cout << '0';
+        if (i == (sizeof(float) / 4 * 8 + 1)) {
+            SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
+            putchar(' ');
         }
-        if (i == 1 || i % 8 == 0) {
-            cout << ' ';
+        if (i == 1 || ( i > (sizeof(float) / 4 * 8 + 1) && i % 8 == 0 )) {
+            putchar(' ');
         }
-        mask >>= 1;
     }
+    cout << endl << endl;
+    SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+
+    cout << "Введите переменную типа double: ";
+    cin >> Dnumber;
+    cout << endl;
+
+    SetConsoleTextAttribute(handle, FOREGROUND_RED);
+    for (int j = 0; j < sizeof(double) / sizeof(int); ++j) {
+        mask = 1;
+        mask <<= 31;
+        for (int i = 1; i < sizeof(int) * 8 + 1; ++i, mask >>= 1) {
+            mask & DcellInArrInt[sizeof(double) / sizeof(int) - 1 - j] ? putchar('1') : putchar('0');
+            elCount++;
+            if (elCount == (sizeof(double) / 8) * 12) {
+                SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
+                putchar(' ');
+            }
+            if (elCount == 1) {
+                SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
+                putchar(' ');
+            }
+        }
+    }
+    cout << endl;
+    SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    
     return 0;
 }
