@@ -1,84 +1,54 @@
 ﻿#include <iostream>
 #include <windows.h>
 using namespace std;
+HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-int main()
-{
-    int Inumber, elCount = 0;
-    union {
-        float Fnumber;
-        int FcellInInt;
-    };
-    union {
-        double Dnumber;
-        int DcellInArrInt[sizeof(double) / sizeof(int)];
-    };
-    unsigned int mask;
-
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    setlocale(0, "");
-
-    cout << "int: " << sizeof(int) << " bytes" << endl;
-    cout << "short int: " << sizeof(short int) << " bytes" << endl;
-    cout << "long int: " << sizeof(long int) << " bytes" << endl;
-    cout << "float: " << sizeof(float) << " bytes" << endl;
-    cout << "double: " << sizeof(double) << " bytes" << endl;
-    cout << "long double: " << sizeof(long double) << " bytes" << endl;
-    cout << "char : " << sizeof(char) << " bytes" << endl;
-    cout << "bool: " << sizeof(bool) << " bytes" << endl;
-    cout << endl;
-
-    cout << "Введите переменную типа int: ";
-    cin >> Inumber;
-    cout << endl;
-    mask = 1;
+void cellInt(int intNumber) {
+    unsigned int mask = 1;
     mask <<= 31;
-
     SetConsoleTextAttribute(handle, FOREGROUND_RED);
     for (int i = 1; i < sizeof(int) * 8 + 1; ++i, mask >>= 1) {
-        mask & Inumber ? putchar('1') : putchar('0');
+        mask& intNumber ? putchar('1') : putchar('0');
         if (i == 1 || i % 8 == 0) {
             SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
             putchar(' ');
         }
     }
-    cout << endl << endl;
+    cout << "\n\n";
     SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+}
 
-    cout << "Введите переменную типа float: ";
-    cin >> Fnumber;
-    cout << endl;
-    mask = 1;
-    mask <<= 31;
+void cellFloat(int floatCellInInt) {
 
+    unsigned int mask = 1;
+    mask <<= sizeof(float)*8 - 1;
     SetConsoleTextAttribute(handle, FOREGROUND_RED);
     for (int i = 1; i < sizeof(float) * 8 + 1; ++i, mask >>= 1) {
-        mask & FcellInInt ? putchar('1') : putchar('0');
+        mask& floatCellInInt ? putchar('1') : putchar('0');
         if (i < (sizeof(float) / 4 * 8 + 1)) {
             SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
         }
-        if (i == (sizeof(float) / 4 * 8 + 1)) {
+        else if (i == (sizeof(float) / 4 * 8 + 1)) {
             SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
             putchar(' ');
         }
-        if (i == 1 || ( i > (sizeof(float) / 4 * 8 + 1) && i % 8 == 0 )) {
+        else if (i == 1 || (i > (sizeof(float) / 4 * 8 + 1) && i % 8 == 0)) {
             putchar(' ');
         }
     }
-    cout << endl << endl;
+    cout << "\n\n";
     SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+}
 
-    cout << "Введите переменную типа double: ";
-    cin >> Dnumber;
-    cout << endl;
+void cellDoub(int doubCellInArrInt[]) {
 
+    unsigned int mask, elCount = 0;
     SetConsoleTextAttribute(handle, FOREGROUND_RED);
     for (int j = 0; j < sizeof(double) / sizeof(int); ++j) {
         mask = 1;
         mask <<= 31;
         for (int i = 1; i < sizeof(int) * 8 + 1; ++i, mask >>= 1) {
-            mask & DcellInArrInt[sizeof(double) / sizeof(int) - 1 - j] ? putchar('1') : putchar('0');
+            mask& doubCellInArrInt[sizeof(double) / sizeof(int) - 1 - j] ? putchar('1') : putchar('0');
             elCount++;
             if (elCount == (sizeof(double) / 8) * 12) {
                 SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
@@ -90,8 +60,99 @@ int main()
             }
         }
     }
-    cout << endl;
+    cout << "\n\n";
     SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-    
+
+}
+
+int main()
+{
+    int intNumber, bitID;
+    unsigned int maskBitID[2] = {0,0};
+    char input;
+    union {
+        float floatNumber;
+        int floatCellInInt;
+    };
+    union {
+        double doubNumber;
+        int doubCellInArrInt[sizeof(double) / sizeof(int)];
+    };
+    setlocale(0, "");
+
+    cout << "int: " << sizeof(int) << " bytes\n";
+    cout << "short int: " << sizeof(short int) << " bytes\n";
+    cout << "long int: " << sizeof(long int) << " bytes\n";
+    cout << "float: " << sizeof(float) << " bytes\n";
+    cout << "double: " << sizeof(double) << " bytes\n";
+    cout << "long double: " << sizeof(long double) << " bytes\n";
+    cout << "char : " << sizeof(char) << " bytes\n";
+    cout << "bool: " << sizeof(bool) << " bytes\n";
+
+    cout << "\nВведите переменную типа int: ";
+    cin >> intNumber;
+    cout << '\n';
+    cellInt(intNumber);
+    do{
+        cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
+        cin >> input;
+        if (input != 'n'){
+            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cin >> bitID;
+            maskBitID[1] = 1;
+            maskBitID[1] <<= bitID;
+            intNumber ^= maskBitID[1];
+            cout << '\n';
+            cellInt(intNumber);
+            cout << "Получившееся число: " << intNumber << "\n\n";
+        }
+    } while (input != 'n');
+
+    cout << "\nВведите переменную типа float: ";
+    cin >> floatNumber;
+    cout << '\n';
+    cellFloat(floatCellInInt);
+    do{
+        cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
+        cin >> input;
+        if (input != 'n') {
+            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cin >> bitID;
+            maskBitID[1] = 1;
+            maskBitID[1] <<= bitID;
+            floatCellInInt ^= maskBitID[1];
+            cout << '\n';
+            cellFloat(floatCellInInt);
+            cout << "Получившееся число: " << floatNumber << "\n\n";
+        }
+    } while (input != 'n');
+
+    cout << "\nВведите переменную типа double: ";
+    cin >> doubNumber;
+    cout << '\n';
+    cellDoub(doubCellInArrInt);
+    do {
+        cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
+        cin >> input;
+        if (input != 'n') {
+            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cin >> bitID;
+            if (bitID < 32) {
+                maskBitID[0] = 0;
+                maskBitID[1] = 1;
+                maskBitID[1] <<= bitID;
+            }
+            else {
+                maskBitID[0] = 1;
+                maskBitID[1] = 0;
+                maskBitID[0] <<= bitID - 32;
+            }
+            doubCellInArrInt[1] ^= maskBitID[0];
+            doubCellInArrInt[0] ^= maskBitID[1];
+            cout << '\n';
+            cellDoub(doubCellInArrInt);
+            cout << "\nПолучившееся число: " << doubNumber << "\n\n";
+        }
+    } while (input != 'n');
     return 0;
 }
