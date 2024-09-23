@@ -25,14 +25,15 @@ void cellFloat(int floatCellInInt) {
     SetConsoleTextAttribute(handle, FOREGROUND_RED);
     for (int i = 1; i < sizeof(float) * 8 + 1; ++i, mask >>= 1) {
         mask& floatCellInInt ? putchar('1') : putchar('0');
-        if (i < (sizeof(float) / 4 * 8 + 1)) {
+        if (i == 1){
             SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
+            putchar(' ');
         }
         else if (i == (sizeof(float) / 4 * 8 + 1)) {
             SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
             putchar(' ');
         }
-        else if (i == 1 || (i > (sizeof(float) / 4 * 8 + 1) && i % 8 == 0)) {
+        else if (i > (sizeof(float) / 4 * 8 + 1) && i % 8 == 0) {
             putchar(' ');
         }
     }
@@ -54,7 +55,7 @@ void cellDoub(int doubCellInArrInt[]) {
                 SetConsoleTextAttribute(handle, FOREGROUND_BLUE);
                 putchar(' ');
             }
-            if (elCount == 1) {
+            else if (elCount == 1) {
                 SetConsoleTextAttribute(handle, FOREGROUND_GREEN);
                 putchar(' ');
             }
@@ -67,7 +68,7 @@ void cellDoub(int doubCellInArrInt[]) {
 
 int main()
 {
-    int intNumber, bitID;
+    int intNumber, bitID, bitValue;
     unsigned int maskBitID[2] = {0,0};
     char input;
     union {
@@ -97,11 +98,22 @@ int main()
         cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
         cin >> input;
         if (input != 'n'){
-            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cout << "\nвведите номер бита, считая справа налево: ";
             cin >> bitID;
+            cout << "\nвведите значение бита: ";
+            cin >> bitValue;
             maskBitID[1] = 1;
-            maskBitID[1] <<= bitID;
-            intNumber ^= maskBitID[1];
+            maskBitID[1] <<= bitID-1;
+            if (bitValue == 1) {
+                if ((intNumber ^ maskBitID[1]) > intNumber) {
+                    intNumber ^= maskBitID[1];
+                }
+            }
+            else {
+                if ((intNumber ^ maskBitID[1]) < intNumber) {
+                    intNumber ^= maskBitID[1];
+                }
+            }
             cout << '\n';
             cellInt(intNumber);
             cout << "Получившееся число: " << intNumber << "\n\n";
@@ -116,11 +128,22 @@ int main()
         cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
         cin >> input;
         if (input != 'n') {
-            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cout << "\nвведите номер бита, считая справа налево: ";
             cin >> bitID;
+            cout << "\nвведите значение бита: ";
+            cin >> bitValue;
             maskBitID[1] = 1;
-            maskBitID[1] <<= bitID;
-            floatCellInInt ^= maskBitID[1];
+            maskBitID[1] <<= bitID - 1;
+            if (bitValue == 1) {
+                if ((floatCellInInt ^ maskBitID[1]) > floatCellInInt) {
+                    floatCellInInt ^= maskBitID[1];
+                }
+            }
+            else {
+                if ((floatCellInInt ^ maskBitID[1]) < floatCellInInt) {
+                    floatCellInInt ^= maskBitID[1];
+                }
+            }
             cout << '\n';
             cellFloat(floatCellInInt);
             cout << "Получившееся число: " << floatNumber << "\n\n";
@@ -135,24 +158,37 @@ int main()
         cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
         cin >> input;
         if (input != 'n') {
-            cout << "\nвведите номер бита справа налево, начиная с нуля: ";
+            cout << "\nвведите номер бита, считая справа налево: ";
             cin >> bitID;
+            cout << "\nвведите значение бита: ";
+            cin >> bitValue;
             if (bitID < 32) {
                 maskBitID[0] = 0;
                 maskBitID[1] = 1;
-                maskBitID[1] <<= bitID;
+                maskBitID[1] <<= bitID - 1;
             }
             else {
                 maskBitID[0] = 1;
                 maskBitID[1] = 0;
-                maskBitID[0] <<= bitID - 32;
+                maskBitID[0] <<= bitID - 32 - 1;
             }
-            doubCellInArrInt[1] ^= maskBitID[0];
-            doubCellInArrInt[0] ^= maskBitID[1];
+            if (bitValue == 1) {
+                if (((doubCellInArrInt[1] ^ maskBitID[0]) + (doubCellInArrInt[0] ^ maskBitID[1])) > doubCellInArrInt[0]+ doubCellInArrInt[1]) {
+                    doubCellInArrInt[1] ^= maskBitID[0];
+                    doubCellInArrInt[0] ^= maskBitID[1];
+                }
+            }
+            else {
+                if (((doubCellInArrInt[1] ^ maskBitID[0]) + (doubCellInArrInt[0] ^ maskBitID[1])) < doubCellInArrInt[0] + doubCellInArrInt[1]) {
+                    doubCellInArrInt[1] ^= maskBitID[0];
+                    doubCellInArrInt[0] ^= maskBitID[1];
+                }
+            }
             cout << '\n';
             cellDoub(doubCellInArrInt);
             cout << "\nПолучившееся число: " << doubNumber << "\n\n";
         }
     } while (input != 'n');
+
     return 0;
 }
