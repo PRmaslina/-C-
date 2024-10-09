@@ -189,7 +189,6 @@ void swapElTime(int arr[], int firstElId, int secondElId) {
 }
 
 void bubbleSort(int arr[], const int sizeArr) {
-    auto timeStart = chrono::steady_clock::now();
     bool isChanged = true;
     int end = sizeArr - 1;
     while (isChanged == true) {
@@ -202,12 +201,9 @@ void bubbleSort(int arr[], const int sizeArr) {
         }
         --end;
     }
-    auto timeEnd = chrono::steady_clock::now();
-    cout << "bubbleSort  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
 }
 
 void shakerSort(int arr[], const int sizeArr) {
-    auto timeStart = chrono::steady_clock::now();
     bool isChanged = true;
     int start = 0, end = sizeArr - 1;
     while (isChanged == true) {
@@ -230,13 +226,9 @@ void shakerSort(int arr[], const int sizeArr) {
         }
         ++start;
     }
-    auto timeEnd = chrono::steady_clock::now();
-    cout << "shakerSort  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
 }
 
 void combSort(int arr[], const int sizeArr) {
-    auto timeStart = chrono::steady_clock::now();
-
     float k = 1.247;
     bool isChanged = true;
     int end = sizeArr - 1, gap = sizeArr - 1;
@@ -259,14 +251,9 @@ void combSort(int arr[], const int sizeArr) {
         }
         --end;
     }
-
-    auto timeEnd = chrono::steady_clock::now();
-    cout << "combSort  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
 }
 
 void insertSort(int arr[], const int sizeArr) {
-    auto timeStart = chrono::steady_clock::now();
-
     int end = sizeArr - 1, stepCount;
     for (int start = 1; start <= end; ++start) {
         stepCount = 0;
@@ -275,50 +262,51 @@ void insertSort(int arr[], const int sizeArr) {
             ++stepCount;
         }
     }
-    auto timeEnd = chrono::steady_clock::now();
-    cout << "insertSort  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
 }
 
-//void quickSortSep(int arr[], int pivot,int &countEl) {
-//    int smallArr[countEl / 2], largeArr[countEl / 2 + countEl % 2], smCount = 0, larCount = 0;
-//    countEl /= 2;
-//    if (countEl > 3) {
-//        for (int i = 0; i < pivot; ++i) {
-//            arr[i] < arr[pivot] ? smallArr[smCount++] = arr[i] : largeArr[larCount++] = arr[i];
-//        }
-//        pivot = sizeArr - 1;
-//        quicksortsep(smallArr, pivot, countEl);
-//        quicksortsep(largeArr, pivot, countEl);
-//    }
-//    else:
-//}
+void quickSortSep(int arr[], int start, int end){
+    int pivot = start;
+    ++start;
+    if (start >= end) {
+        return;
+    }
+    for (int i = start; i <= end; ++i) {
+        if (arr[i] < arr[pivot]) {
+            swap(arr[start], arr[i]);
+            ++start;
+        }
+    }
+    swap(arr[pivot], arr[start-1]);
+    quickSortSep(arr, pivot, start - 2);
+    quickSortSep(arr, start, end);
+}
 
-//void quickSortMain(int arr[], const int sizeArr) {
-//    auto timeStart = chrono::steady_clock::now();
-//
-//    int end = sizeArr - 1, pivot = sizeArr - 1, countEl = sizeArr;
-//    while (countEl > 1) {
-//        quicksortsep(arr, pivot, countEl);
-//    }
-//    
-//
-//    auto timeEnd = chrono::steady_clock::now();
-//    cout << "insertSort  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
-//    //    for (int i = 0; i < sizeArr; ++i) {
-//    //        cout << arr[i] << " ";
-//    //    }
-//}
+void quickSortMain(int arr[], const int sizeArr) {
+    quickSortSep(arr, 0, sizeArr - 1);
+}
+
+void mergeSort(int arr[], const int sizeArr) {
+
+}
+
+void leadTime(void func(int[], const int), const char name[], int arr[], const int sizeArr) {
+    auto timeStart = chrono::steady_clock::now();
+    func(arr, sizeArr);
+    auto timeEnd = chrono::steady_clock::now();
+    cout << "Время выполнения " << name << ":  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count() << " nanosec\n";
+}
 
 int main() {
     setlocale(0, "");
     const int sizeArr = 100;
     int choise, arr[sizeArr], unsortArr[sizeArr], inputNumber, firstElId, secondElId;
-    arr[0] = 0;
+    bool isSorted = false;
     cout << "Исходный массив: ";
     createArr(unsortArr, sizeArr);
     printArr(unsortArr, sizeArr);
+    equatingArr(arr, unsortArr, sizeArr);
     do {
-        if (arr[0] != 0) {
+        if (isSorted) {
             cout << "\n\nВыберите нужный пункт:"
                 << "\n 0) Переформировать массив"
                 << "\n 1) Отсортировать массив"
@@ -334,7 +322,7 @@ int main() {
             {
             case(0): // Переформировать массвив  
                 cout << "Новый исходный массив: ";
-                arr[0] = 0;
+                isSorted = false;
                 createArr(unsortArr, sizeArr);
                 printArr(unsortArr, sizeArr);
                 break;
@@ -348,44 +336,39 @@ int main() {
                     << "\n 5) Merge sort"
                     << "\n 6) Все разом\n";
                 cin >> choise;
+                isSorted = true;
                 switch (choise) {
                 case 0:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    bubbleSort(arr, sizeArr);
+                    leadTime(bubbleSort,"bubbleSort",arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 1:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    shakerSort(arr, sizeArr);
+                    leadTime(shakerSort, "shakerSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 2:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    combSort(arr, sizeArr);
+                    leadTime(combSort, "combSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 3:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    insertSort(arr, sizeArr);
+                    leadTime(insertSort, "insertSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 4:
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n";
-                    //quickSortMain(arr, sizeArr);
+                    cout << "\n";
+                    leadTime(quickSortMain, "quickSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 5:
-                    //equatingArr(arr, unsortArr, sizeArr);
                     //cout << "\n";
                     //quickSortMain(arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
@@ -394,23 +377,23 @@ int main() {
                 case 6:
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    bubbleSort(arr, sizeArr);
+                    leadTime(bubbleSort, "bubbleSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    shakerSort(arr, sizeArr);
+                    leadTime(shakerSort, "shakerSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    combSort(arr, sizeArr);
+                    leadTime(combSort, "combSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    insertSort(arr, sizeArr);
+                    leadTime(insertSort, "insertSort", arr, sizeArr);
 
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n\n";
-                    //quickSortMain(arr, sizeArr);
+                    equatingArr(arr, unsortArr, sizeArr);
+                    cout << "\n\n";
+                    leadTime(quickSortMain, "quickSort", arr, sizeArr);
 
                     //equatingArr(arr, unsortArr, sizeArr);
                     //cout << "\n\n";
@@ -448,6 +431,7 @@ int main() {
                 swapElTime(arr, firstElId, secondElId);
                 cout << "Полученный массив: ";
                 printArr(arr, sizeArr);
+                isSorted = false;
                 break;
             }
         }
@@ -455,13 +439,14 @@ int main() {
             cout << "\n\nВыберите нужный пункт:"
                 << "\n 0) Переформировать массив"
                 << "\n 1) Отсортировать массив"
+                << "\n 7) Поменять местами элементы массива"
                 << "\n-1) Закончить выполнение программы\n";
             cin >> choise;
             switch (choise)
             {
             case(0): // Переформировать массвив  
                 cout << "Новый исходный массив: ";
-                arr[0] = 0;
+                isSorted = false;
                 createArr(unsortArr, sizeArr);
                 printArr(unsortArr, sizeArr);
                 break;
@@ -475,45 +460,40 @@ int main() {
                     << "\n 5) Merge sort"
                     << "\n 6) Все разом\n";
                 cin >> choise;
+                isSorted = true;
                 switch (choise) {
                 case 0:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    bubbleSort(arr, sizeArr);
+                    leadTime(bubbleSort, "bubbleSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 1:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    shakerSort(arr, sizeArr);
+                    leadTime(shakerSort, "shakerSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 2:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    combSort(arr, sizeArr);
+                    leadTime(combSort, "combSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 3:
-                    equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    insertSort(arr, sizeArr);
+                    leadTime(insertSort, "insertSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 4:
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n\n";
-                    //quickSortMain(arr, sizeArr);
+                    cout << "\n";
+                    leadTime(quickSortMain, "quickSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 case 5:
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n\n";
+                    //cout << "\n";
                     //quickSortMain(arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
@@ -521,32 +501,40 @@ int main() {
                 case 6:
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    bubbleSort(arr, sizeArr);
+                    leadTime(bubbleSort, "bubbleSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    shakerSort(arr, sizeArr);
+                    leadTime(shakerSort, "shakerSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    combSort(arr, sizeArr);
+                    leadTime(combSort, "combSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
                     cout << "\n";
-                    insertSort(arr, sizeArr);
+                    leadTime(insertSort, "insertSort", arr, sizeArr);
+
+                    equatingArr(arr, unsortArr, sizeArr);
+                    cout << "\n";
+                    leadTime(quickSortMain, "quickSort", arr, sizeArr);
 
                     //equatingArr(arr, unsortArr, sizeArr);
                     //cout << "\n";
                     //quickSortMain(arr, sizeArr);
 
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n";
-                    //quickSortMain(arr, sizeArr);
-
-                    cout << "\nполучившийся массив: ";
+                    cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
                 }
+                break;
+            case(7): // Поменять местами элементы массива
+                cout << "Введите через пробел номера двух элементов массива: ";
+                cin >> firstElId >> secondElId;
+                swapElTime(arr, firstElId, secondElId);
+                cout << "Полученный массив: ";
+                printArr(arr, sizeArr);
+                isSorted = false;
                 break;
             }
         }
