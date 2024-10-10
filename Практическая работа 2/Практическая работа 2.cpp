@@ -285,8 +285,53 @@ void quickSortMain(int arr[], const int sizeArr) {
     quickSortSep(arr, 0, sizeArr - 1);
 }
 
-void mergeSort(int arr[], const int sizeArr) {
+void mergeSortStep(int arr[], const int sizeArr, int start, int end) {
+    int parity = (end - start + 1) % 2;
+    if (end - start <= 1) {
+        if (end - start == 1 && arr[end] < arr[start]) {
+            swap(arr[start], arr[end]);
+        }
+        return;
+    }
+    mergeSortStep(arr, sizeArr, start, (end + start) / 2 - parity);
+    mergeSortStep(arr, sizeArr, (end + start) / 2 + 1 - parity, end);
+    int* twoArr = (int*)malloc(sizeof(int) * (end - start + 1));
+    int ind = 0;
+    int lArrIndex = start, rArrIndex = (end + start) / 2 + 1 - parity;
+    for (int i = 0; i < (end - start + 1);++i) {
+        if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
+            if (arr[lArrIndex] > arr[rArrIndex]) {
+                twoArr[ind] = arr[rArrIndex];
+                ++rArrIndex;
+                ++ind;
+            }
+            else {
+                twoArr[ind] = arr[lArrIndex];
+                ++lArrIndex;
+                ++ind;
+            }
+        }
+        else if (rArrIndex > end) {
+            twoArr[ind] = arr[lArrIndex];
+            ++lArrIndex;
+            ++ind;
+        }
+        else {
+            twoArr[ind] = arr[rArrIndex];
+            ++rArrIndex;
+            ++ind;
+        }
+    }
+    ind = 0;
+    for (int i = start; i <= end;++i) {
+        arr[i] = twoArr[ind];
+        ++ind;
+    }
+    free(twoArr);
+}
 
+void mergeSortMain(int arr[], int sizeArr){
+    mergeSortStep(arr,sizeArr,0,sizeArr-1);
 }
 
 void leadTime(void func(int[], const int), const char name[], int arr[], const int sizeArr) {
@@ -369,8 +414,8 @@ int main() {
                     printArr(arr, sizeArr);
                     break;
                 case 5:
-                    //cout << "\n";
-                    //quickSortMain(arr, sizeArr);
+                    cout << "\n";
+                    leadTime(mergeSortMain, "mergeSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
@@ -392,12 +437,12 @@ int main() {
                     leadTime(insertSort, "insertSort", arr, sizeArr);
 
                     equatingArr(arr, unsortArr, sizeArr);
-                    cout << "\n\n";
+                    cout << "\n";
                     leadTime(quickSortMain, "quickSort", arr, sizeArr);
 
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n\n";
-                    //quickSortMain(arr, sizeArr);
+                    equatingArr(arr, unsortArr, sizeArr);
+                    cout << "\n";
+                    leadTime(mergeSortMain, "mergeSort", arr, sizeArr);
 
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
@@ -493,8 +538,8 @@ int main() {
                     printArr(arr, sizeArr);
                     break;
                 case 5:
-                    //cout << "\n";
-                    //quickSortMain(arr, sizeArr);
+                    cout << "\n";
+                    leadTime(mergeSortMain, "mergeSort", arr, sizeArr);
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
                     break;
@@ -519,9 +564,9 @@ int main() {
                     cout << "\n";
                     leadTime(quickSortMain, "quickSort", arr, sizeArr);
 
-                    //equatingArr(arr, unsortArr, sizeArr);
-                    //cout << "\n";
-                    //quickSortMain(arr, sizeArr);
+                    equatingArr(arr, unsortArr, sizeArr);
+                    cout << "\n";
+                    leadTime(mergeSortMain, "mergeSort", arr, sizeArr);
 
                     cout << "\nПолучившийся массив: ";
                     printArr(arr, sizeArr);
