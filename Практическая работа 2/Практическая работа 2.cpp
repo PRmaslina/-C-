@@ -285,7 +285,7 @@ void quickSortMain(int arr[], const int sizeArr) {
     quickSortSep(arr, 0, sizeArr - 1);
 }
 
-void mergeSortStep(int arr[], const int sizeArr, int start, int end) {
+void mergeSortStep(int arr[], const int sizeArr, int start, int end, int twoSortArr[]) {
     int parity = (end - start + 1) % 2;
     if (end - start <= 1) {
         if (end - start == 1 && arr[end] < arr[start]) {
@@ -293,47 +293,50 @@ void mergeSortStep(int arr[], const int sizeArr, int start, int end) {
         }
         return;
     }
-    mergeSortStep(arr, sizeArr, start, (end + start) / 2 - parity);
-    mergeSortStep(arr, sizeArr, (end + start) / 2 + 1 - parity, end);
-    int* twoArr = (int*)malloc(sizeof(int) * (end - start + 1));
+    mergeSortStep(arr, sizeArr, start, (end + start) / 2 - parity, twoSortArr);
+    mergeSortStep(arr, sizeArr, (end + start) / 2 + 1 - parity, end, twoSortArr);
+    //int* twoSortArr = (int*)malloc(sizeof(int) * (end - start + 1));
     int ind = 0;
     int lArrIndex = start, rArrIndex = (end + start) / 2 + 1 - parity;
     for (int i = 0; i < (end - start + 1);++i) {
         if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
             if (arr[lArrIndex] > arr[rArrIndex]) {
-                twoArr[ind] = arr[rArrIndex];
+                twoSortArr[ind] = arr[rArrIndex];
                 ++rArrIndex;
                 ++ind;
             }
             else {
-                twoArr[ind] = arr[lArrIndex];
+                twoSortArr[ind] = arr[lArrIndex];
                 ++lArrIndex;
                 ++ind;
             }
         }
         else if (rArrIndex > end) {
-            twoArr[ind] = arr[lArrIndex];
+            twoSortArr[ind] = arr[lArrIndex];
             ++lArrIndex;
             ++ind;
         }
         else {
-            twoArr[ind] = arr[rArrIndex];
+            twoSortArr[ind] = arr[rArrIndex];
             ++rArrIndex;
             ++ind;
         }
     }
     ind = 0;
     for (int i = start; i <= end;++i) {
-        arr[i] = twoArr[ind];
+        arr[i] = twoSortArr[ind];
         ++ind;
     }
-    free(twoArr);
+    //free(twoSortArr);
 }
 
-void mergeSortMain(int arr[], int sizeArr){
-    mergeSortStep(arr,sizeArr,0,sizeArr-1);
+//template <size_t size> int(&arr)[size]
+void mergeSortMain(int arr[], int sizeArr) {
+    //int* twoSortArr = (int*)malloc(sizeof(int) * sizeArr);
+    int twoSortArr[100];
+    mergeSortStep(arr, sizeArr, 0, sizeArr - 1, twoSortArr);
+    //free(twoSortArr);
 }
-
 void leadTime(void func(int[], const int), const char name[], int arr[], const int sizeArr) {
     auto timeStart = chrono::steady_clock::now();
     func(arr, sizeArr);
