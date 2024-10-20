@@ -15,8 +15,9 @@ void printArr(int arr[], const int sizeArr) {
 }
 
 void createArr(int arr[], const int sizeArr) {
+    srand(time(0));
     for (int i = 0; i < sizeArr; i++) {
-        arr[i] = (rand() % 100) - (rand() % 100);
+        arr[i] = (rand() % sizeArr) - (rand() % sizeArr);
     }
 }
 
