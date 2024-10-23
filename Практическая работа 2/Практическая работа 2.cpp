@@ -16,8 +16,9 @@ void printArr(int arr[], const int sizeArr) {
 
 void createArr(int arr[], const int sizeArr) {
     srand(time(0));
+    int start = -99, end = 99;
     for (int i = 0; i < sizeArr; i++) {
-        arr[i] = (rand() % sizeArr) - (rand() % sizeArr);
+        arr[i] = rand() % (end - start + 1) + start;
     }
 }
 
@@ -167,7 +168,7 @@ void tryFindEl(int arr[], int number, const int sizeArr) {
         cout << "Такого элемента нет в массиве\n";
     }
     else{
-        cout << "ID этого элемента: " << idEl << endl;
+        cout << "ID найденного элемента: " << idEl << endl;
     }
     cout << "Бинарный поиск  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd1 - timeStart1).count() << " nanosec\n";
     auto timeStart2 = chrono::steady_clock::now();
@@ -177,7 +178,7 @@ void tryFindEl(int arr[], int number, const int sizeArr) {
         cout << "Такого элемента нет в массиве\n";
     }
     else{
-        cout << "ID этого элемента: " << idEl << endl;
+        cout << "ID найденного элемента: " << idEl << endl;
     }
     cout << "Обычный поиск  time:  " << chrono::duration_cast<chrono::nanoseconds>(timeEnd2 - timeStart2).count() << " nanosec\n";
 }
@@ -356,7 +357,7 @@ int main() {
     createArr(unsortArr, sizeArr);
     printArr(unsortArr, sizeArr);
     equatingArr(arr, unsortArr, sizeArr);
-    do {
+    do { // Меню выбора
         if (isSorted) {
             cout << "\n\nВыберите нужный пункт:"
                 << "\n 0) Переформировать массив"
@@ -376,6 +377,7 @@ int main() {
                 isSorted = false;
                 createArr(unsortArr, sizeArr);
                 printArr(unsortArr, sizeArr);
+                equatingArr(arr, unsortArr, sizeArr);
                 break;
             case(1): // Отсортировать массив  
                 cout << "\nВыберите выриант сортировки:"
@@ -387,7 +389,7 @@ int main() {
                     << "\n 5) Merge sort"
                     << "\n 6) Все разом\n";
                 cin >> choise;
-                isSorted = true;
+                equatingArr(arr, unsortArr, sizeArr);
                 switch (choise) {
                 case 0:
                     cout << "\n";
@@ -500,6 +502,7 @@ int main() {
                 isSorted = false;
                 createArr(unsortArr, sizeArr);
                 printArr(unsortArr, sizeArr);
+                equatingArr(arr, unsortArr, sizeArr);
                 break;
             case(1): // Отсортировать массив  
                 cout << "\nВыберите выриант сортировки:"
