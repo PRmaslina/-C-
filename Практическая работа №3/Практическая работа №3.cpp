@@ -25,7 +25,7 @@ void printMat(int mat[][sizeMat]) {
 int main(){
 	setlocale(0, "");
 	const int sizeMat = 15;
-	int mat[sizeMat][sizeMat], c=1;
+	int mat[sizeMat][sizeMat];
 	for (int i = 0; i < sizeMat; ++i) {
 		for (int j = 0; j < sizeMat; ++j) {
 			mat[j][i] = 0;
@@ -34,7 +34,7 @@ int main(){
 		cout << endl;
 	}
 	char side = 'r';
-	int k = 0;
+	int k = 0, c = 1;
 	char ;
 	int* turtle = &mat[0][0];
 	do {
@@ -85,5 +85,5 @@ int main(){
 		system("cls");
 		printMat<sizeMat>(mat);
 		Sleep(10);
-	} while (side != 'n');
+	} while (c <= sizeMat * sizeMat);
 }
