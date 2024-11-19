@@ -6,7 +6,6 @@
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
-
 void prN(int number, int x, int y) {
 	destCoord.X = x;
 	destCoord.Y = y;
@@ -57,7 +56,7 @@ void fillMatSpiral(int** mat, int rows, int colums) {
 			for (int i = 0; colums - l == 0 ? i <= colums - l : i < colums - l ; ++i, c++, side == 'd' ? x += 4 : x -= 4, turtle += k) {
 				*turtle = c;//rand() % (rows*colums)  + 1;
 				prN(*turtle, x, y);
-				Sleep(100);
+				Sleep(10);
 			}
 			flag ? flag = false : l += 1;
 		}
@@ -65,7 +64,7 @@ void fillMatSpiral(int** mat, int rows, int colums) {
 			for (int i = 0; rows - f == 0? i <= rows - f : i < rows - f; ++i, c++, side == 'l' ? y += 1 : y -= 1, turtle += k) {
 				*turtle = c;//rand() % (rows*colums)  + 1;
 				prN(*turtle, x, y);
-				Sleep(100);
+				Sleep(10);
 			}
 			f += 1;
 		}
@@ -182,9 +181,203 @@ void replaceBlocksHor(int** mat, int rows, int colums) {
 	}
 }
 
+void arithOperMat(int** mat, int rows, int colums, char operation, int number) {
+	int* turtle = &mat[0][0];
+	for (int i = 0; i < rows * colums; ++i, ++turtle) {
+		switch (operation) {
+		case '+':
+			*turtle += number;
+			break;
+		case '-':
+			*turtle -= number;
+			break;
+		case '*':
+			*turtle *= number;
+			break;
+		case '/':
+			*turtle /= number;
+			break;
+		}
+	}
+}
+
+void bubbleSort(int** mat, int rows, int colums) {
+	system("cls");
+	//printMat(mat, rows, colums, 0, 0);
+	int x, y;
+	bool isChanged = true;
+	int el;
+	int* end = &mat[rows - 1][colums - 1];
+	while (isChanged == true) {
+		isChanged = false;
+		for (int* start = &mat[0][0]; start < end; ++start) {
+			if (*(start + 1) < *start) {
+				swap(*(start + 1), *start);
+				isChanged = true;
+			}
+			el = start - &mat[0][0] + 1;
+			x = (el == 1 ? 0 : (el % colums) * 4);
+			y = (el == colums*rows? rows-1 : el / colums);
+			prN(*start, x, y);
+			el = &start[1] - &mat[0][0] + 1;
+			x = (el == 1 ? 0 : (el % colums) * 4);
+			y = (el == colums * rows? rows - 1 : el / colums);
+			SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
+			prN(*(start + 1), x, y);
+			SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			Sleep(100);
+		}
+		--end;
+		//el = end - &mat[0][0] + 1;
+		//x = (el == 1 ? 0 : (el % colums) * 4);
+		//y = (el == colums * rows ? rows - 1 : el / colums);
+		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
+		prN(end[1], x, y);
+		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	}
+	cin >> rows;
+	printMat(mat, rows, colums, 0, 0);
+	cin >> rows;
+}
+
+template <const int sizeArr>
+void shakerSort(int arr[]) {
+	bool isChanged = true;
+	int start = 0, end = sizeArr - 1;
+	while (isChanged == true) {
+		isChanged = false;
+		for (int i = start; i < end; ++i) {
+			if (arr[i + 1] < arr[i]) {
+				swap(arr[i + 1], arr[i]);
+				isChanged = true;
+			}
+		}
+		--end;
+		if (!isChanged) {
+			break;
+		}
+		for (int i = end; i > start; --i) {
+			if (arr[i - 1] > arr[i]) {
+				swap(arr[i - 1], arr[i]);
+				isChanged = true;
+			}
+		}
+		++start;
+	}
+}
+
+template <const int sizeArr>
+void combSort(int arr[]) {
+	float k = 1.247;
+	bool isChanged = true;
+	int end = sizeArr - 1, gap = sizeArr - 1;
+	while (gap != 1) {
+		for (int i = 0; i < sizeArr - gap; ++i) {
+			if (arr[i] > arr[i + gap]) {
+				swap(arr[i + gap], arr[i]);
+			}
+		}
+		gap /= k;
+	}
+
+	while (isChanged == true) {
+		isChanged = false;
+		for (int i = 0; i < end; ++i) {
+			if (arr[i + 1] < arr[i]) {
+				swap(arr[i + 1], arr[i]);
+				isChanged = true;
+			}
+		}
+		--end;
+	}
+}
+
+template <const int sizeArr>
+void insertSort(int arr[]) {
+	int end = sizeArr - 1, stepCount;
+	for (int start = 1; start <= end; ++start) {
+		stepCount = 0;
+		while (arr[start - stepCount] < arr[start - 1 - stepCount]) {
+			swap(arr[start - stepCount], arr[start - 1 - stepCount]);
+			++stepCount;
+		}
+	}
+}
+
+void quickSortSep(int arr[], int start, int end) {
+	int pivot = start;
+	++start;
+	if (start >= end) {
+		return;
+	}
+	for (int i = start; i <= end; ++i) {
+		if (arr[i] < arr[pivot]) {
+			swap(arr[start], arr[i]);
+			++start;
+		}
+	}
+	swap(arr[pivot], arr[start - 1]);
+	quickSortSep(arr, pivot, start - 2);
+	quickSortSep(arr, start, end);
+}
+
+template <const int sizeArr>
+void quickSortMain(int arr[]) {
+	quickSortSep(arr, 0, sizeArr - 1);
+}
+
+void mergeSortStep(int arr[], const int sizeArr, int start, int end, int twoSortArr[]) {
+	int parity = (end - start + 1) % 2;
+	if (end - start <= 1) {
+		if (end - start == 1 && arr[end] < arr[start]) {
+			swap(arr[start], arr[end]);
+		}
+		return;
+	}
+	mergeSortStep(arr, sizeArr, start, (end + start) / 2 - parity, twoSortArr);
+	mergeSortStep(arr, sizeArr, (end + start) / 2 + 1 - parity, end, twoSortArr);
+	int ind = 0;
+	int lArrIndex = start, rArrIndex = (end + start) / 2 + 1 - parity;
+	for (int i = 0; i < (end - start + 1); ++i) {
+		if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
+			if (arr[lArrIndex] > arr[rArrIndex]) {
+				twoSortArr[ind] = arr[rArrIndex];
+				++rArrIndex;
+				++ind;
+			}
+			else {
+				twoSortArr[ind] = arr[lArrIndex];
+				++lArrIndex;
+				++ind;
+			}
+		}
+		else if (rArrIndex > end) {
+			twoSortArr[ind] = arr[lArrIndex];
+			++lArrIndex;
+			++ind;
+		}
+		else {
+			twoSortArr[ind] = arr[rArrIndex];
+			++rArrIndex;
+			++ind;
+		}
+	}
+	ind = 0;
+	for (int i = start; i <= end; ++i) {
+		arr[i] = twoSortArr[ind];
+		++ind;
+	}
+}
+
+template <const int sizeArr>
+void mergeSortMain(int arr[]) {
+	int twoSortArr[sizeArr];
+	mergeSortStep(arr, sizeArr, 0, sizeArr - 1, twoSortArr);
+}
+
 int main(){
 	setlocale(0, "");
-	int rows, colums;
+	int rows, colums, number = 0;
 	int choice = 0;
 	cout << "Введите через пробел кол-во строк и стобцов:\n";
 	cin >> rows >> colums;
@@ -210,7 +403,7 @@ int main(){
 		cin >> choice;
 		system("cls");
 		switch (choice) {
-		case 1:
+		case 1: // Заполнить
 			do {
 				cout << "Выберите способ заполнения матрицы:\n"
 					<< "1) По спирали\n"
@@ -227,7 +420,7 @@ int main(){
 				}
 			} while (choice != 0);
 			break;
-		case 2:
+		case 2: // Переставить блоки
 			do {
 				cout << "Как переставить блоки?:\n"
 					<< "1) По кругу\n"
@@ -258,13 +451,89 @@ int main(){
 				cout << endl;
 			} while (choice != 0);
 			break;
-		case 3:
-
+		case 3: // Увеличить/уменьшить все элементы в/на n раз/число
+			cout << "Введите число:\n";
+			cin >> number;
+			do {
+				cout << "\nДействия:\n"
+					<< "1) Прибавить " << number << "\n"
+					<< "2) Отнять " << number << "\n"
+					<< "3) Умножить на " << number << "\n"
+					<< "4) Разделить на " << number << "\n"
+					<< "5) Изменить число\n"
+					<< "0) Назад\n";
+				cin >> choice;
+				if (choice != 5){
+					system("cls");
+					cout << "старая матрица";
+					printMat(mat, rows, colums, 0, 1);
+					switch (choice) {
+					case 0:
+						break;
+					case 1:
+						arithOperMat(mat, rows, colums, '+', number);
+						break;
+					case 2:
+						arithOperMat(mat, rows, colums, '-', number);
+						break;
+					case 3:
+						arithOperMat(mat, rows, colums, '*', number);
+						break;
+					case 4:
+						arithOperMat(mat, rows, colums, '/', number);
+						break;
+					}
+					cout << "\nновая матрица";
+					printMat(mat, rows, colums, 0, rows + 2);
+					cout << endl;
+				}
+				else {
+					system("cls");
+					cout << "Введите число:\n";
+					cin >> number;
+				}
+			} while (choice != 0);
 			break;
-		case 4:
+		case 4: // Отсортировать
+			do {
+				system("cls");
+				cout << "Ваша матрица:";
+				printMat(mat, rows, colums, 0, 1);
+				cout << "\nКакую сортировку использовать?:\n"
+					<< "1) Bubble sort\n"
+					<< "2) Shaker sort\n"
+					<< "3) Comb sort\n"
+					<< "5) Insert sort\n"
+					<< "6) Quck sort\n"
+					<< "7) Merge sort\n"
+					<< "0) Назад\n";
+				cin >> choice;
+				switch (choice) {
+				case 1:
+					bubbleSort( mat, rows, colums);
+					break;
+				case 2:
+					
+					break;
+				case 3:
+					
+					break;
+				case 4:
+					
+					break;
+				case 5:
 
+					break;
+				case 6:
+
+					break;
+				case 7:
+
+					break;
+				}
+			} while (choice != 0);
 			break;
-		case 5:
+		case 5: // Умножить на другую матрицу
 
 			break;
 		}

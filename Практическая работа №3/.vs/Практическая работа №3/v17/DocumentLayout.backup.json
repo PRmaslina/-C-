@@ -1,13 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\",
+  "WorkspaceRootPath": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\Documents\\GitHub\\-C-\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{ED198916-A8F3-4A83-9C7B-F269D0AB9F84}|\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.vcxproj|C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{ED198916-A8F3-4A83-9C7B-F269D0AB9F84}|\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.vcxproj|C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\Documents\\GitHub\\-C-\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{ED198916-A8F3-4A83-9C7B-F269D0AB9F84}|\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.vcxproj|solutionrelative:\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\1\u041F\u0420 \u042E\u043B\u044F\\1\u041F\u0420 \u042E\u043B\u044F.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -17,7 +14,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -25,26 +22,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "1\u041F\u0420 \u042E\u043B\u044F.cpp",
-              "DocumentMoniker": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\1\u041F\u0420 \u042E\u043B\u044F\\1\u041F\u0420 \u042E\u043B\u044F.cpp",
-              "RelativeDocumentMoniker": "..\\1\u041F\u0420 \u042E\u043B\u044F\\1\u041F\u0420 \u042E\u043B\u044F.cpp",
-              "ToolTip": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\1\u041F\u0420 \u042E\u043B\u044F\\1\u041F\u0420 \u042E\u043B\u044F.cpp",
-              "RelativeToolTip": "..\\1\u041F\u0420 \u042E\u043B\u044F\\1\u041F\u0420 \u042E\u043B\u044F.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-27T11:25:05.889Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
-              "DocumentMoniker": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
+              "DocumentMoniker": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\Documents\\GitHub\\-C-\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
               "RelativeDocumentMoniker": "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
-              "ToolTip": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\source\\repos\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
-              "RelativeToolTip": "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAAEIAAAAhAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\\u0414\u0430\u043D\u0438\u043B\\Documents\\GitHub\\-C-\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163\\\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp*",
+              "RelativeToolTip": "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u0431\u043E\u0442\u0430 \u21163.cpp*",
+              "ViewState": "AgIAALcAAAAAAAAAAAAAAM0AAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-10-25T11:20:21.196Z",
               "EditorCaption": ""
