@@ -1,4 +1,4 @@
-﻿#include <iostream>
+﻿﻿#include <iostream>
 #include <chrono>
 using namespace std;
 
@@ -279,7 +279,7 @@ void quickSortSep(int arr[], int start, int end) {
         }
     }
     swap(arr[pivot], arr[start - 1]);
-    quickSortSep(arr, pivot, start - 2);
+    quickSortSep(arr, pivot, start - 1);
     quickSortSep(arr, start, end);
 }
 

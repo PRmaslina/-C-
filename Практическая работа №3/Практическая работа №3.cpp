@@ -10,29 +10,56 @@ void prN(int number, int x, int y) {
 	destCoord.X = x;
 	destCoord.Y = y;
 	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << setw(4) << number << '\r';
+	cout << setw(5) << number << '\r';
 	cout.flush();
+}
+
+void printEl(int number, char colour, int** pattern, int rows, int colums) {
+	int el, x, y;
+	switch (colour) {
+	case 'r':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		break;
+	case 'g':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		break;
+	case 'b':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		break;
+	case 'y':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		break;
+	case 'v':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		break;
+	}
+	el = pattern[number] - pattern[0];
+	x = (el % colums) * 5;
+	y = (el + 1 == colums * rows ? rows - 1 : el / colums);
+	prN(*pattern[number], x, y);
+	SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 
 void printMat(int** mat, int rows, int colums, int x, int y) {
 	//system("cls");
 	int* turtle = &mat[0][0];
-	for (int i = 1; i <= rows * colums; ++i, ++turtle, x+=4) {
+	for (int i = 1; i <= rows * colums; ++i, ++turtle, x+=5) {
 		prN(*turtle, x, y);
 		if (i % colums == 0){
 			++y;
-			x = -4;
+			x -=5* colums;
 		}
 	}
 }
 
-void fillMatSpiral(int** mat, int rows, int colums) {
+void fillMatSpiral(int** mat, int rows, int colums, int speed) {
 	system("cls");
 	int* turtle = &mat[0][0];
 	int k = 1, c = 1 , x = 0, y = 0;
 	int f = 1, l = 1;
 	bool flag = true;
 	char side = 'r';
+	srand(time(0));
 	while (c <= rows * colums){
 		switch (side) {
 		case 'r':
@@ -53,18 +80,18 @@ void fillMatSpiral(int** mat, int rows, int colums) {
 			break;
 		}
 		if (side == 'd' || side == 'u') {
-			for (int i = 0; colums - l == 0 ? i <= colums - l : i < colums - l ; ++i, c++, side == 'd' ? x += 4 : x -= 4, turtle += k) {
-				*turtle = c;//rand() % (rows*colums)  + 1;
+			for (int i = 0; colums - l == 0 ? i <= colums - l : i < colums - l ; ++i, c++, side == 'd' ? x += 5 : x -= 5, turtle += k) {
+				*turtle = rand() % (rows*colums)  + 1;
 				prN(*turtle, x, y);
-				Sleep(10);
+				Sleep(speed);
 			}
 			flag ? flag = false : l += 1;
 		}
 		else {
 			for (int i = 0; rows - f == 0? i <= rows - f : i < rows - f; ++i, c++, side == 'l' ? y += 1 : y -= 1, turtle += k) {
-				*turtle = c;//rand() % (rows*colums)  + 1;
+				*turtle = rand() % (rows*colums)  + 1;
 				prN(*turtle, x, y);
-				Sleep(10);
+				Sleep(speed);
 			}
 			f += 1;
 		}
@@ -74,11 +101,12 @@ void fillMatSpiral(int** mat, int rows, int colums) {
 	SetConsoleCursorPosition(hStdout, destCoord);
 }
 
-void fillMatVert(int** mat, int rows, int colums) {
+void fillMatVert(int** mat, int rows, int colums, int speed) {
 	system("cls");
 	int* turtle = &mat[0][0];
 	int k = 1, c = 1, x = 0, y = 0;
 	char side = 'd';
+	srand(time(0));
 	while (c <= rows * colums) {
 		switch (side) {
 		case 'd':
@@ -91,13 +119,13 @@ void fillMatVert(int** mat, int rows, int colums) {
 			break;
 		}
 		for (int i = 0; i < rows; ++i, ++c, turtle += k) {
-			*turtle = c;//rand() % (rows*colums)  + 1;
+			*turtle = rand() % (rows*colums)  + 1;
 			prN(*turtle, x, y);
-			Sleep(100);
+			Sleep(speed);
 			side == 'u' ? y += 1 : y -= 1;
 		}
 		turtle++;
-		x+=4;
+		x+=5;
 		side == 'u' ? y -= 1 : y += 1;
 		turtle-=k;
 	}
@@ -201,188 +229,461 @@ void arithOperMat(int** mat, int rows, int colums, char operation, int number) {
 	}
 }
 
-void bubbleSort(int** mat, int rows, int colums) {
-	system("cls");
-	//printMat(mat, rows, colums, 0, 0);
-	int x, y;
-	bool isChanged = true;
-	int el;
-	int* end = &mat[rows - 1][colums - 1];
-	while (isChanged == true) {
-		isChanged = false;
-		for (int* start = &mat[0][0]; start < end; ++start) {
-			if (*(start + 1) < *start) {
-				swap(*(start + 1), *start);
-				isChanged = true;
-			}
-			el = start - &mat[0][0] + 1;
-			x = (el == 1 ? 0 : (el % colums) * 4);
-			y = (el == colums*rows? rows-1 : el / colums);
-			prN(*start, x, y);
-			el = &start[1] - &mat[0][0] + 1;
-			x = (el == 1 ? 0 : (el % colums) * 4);
-			y = (el == colums * rows? rows - 1 : el / colums);
-			SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
-			prN(*(start + 1), x, y);
-			SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-			Sleep(100);
+void createSpiralPointersPattern(int** pattern, int** mat, int rows, int colums) {
+	int* turtle = &mat[0][0];
+	int k = 1, c = 0;
+	int f = 1, l = 1;
+	bool flag = true;
+	char side = 'r';
+	while (c < rows * colums) {
+		switch (side) {
+		case 'r':
+			k = 1;
+			side = 'd';
+			break;
+		case 'd':
+			k = colums;
+			side = 'l';
+			break;
+		case 'l':
+			k = -1;
+			side = 'u';
+			break;
+		case 'u':
+			k = -colums;
+			side = 'r';
+			break;
 		}
-		--end;
-		//el = end - &mat[0][0] + 1;
-		//x = (el == 1 ? 0 : (el % colums) * 4);
-		//y = (el == colums * rows ? rows - 1 : el / colums);
-		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
-		prN(end[1], x, y);
-		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		if (side == 'd' || side == 'u') {
+			for (int i = 0; colums - l == 0 ? i <= colums - l : i < colums - l; ++i, c++, turtle += k) {
+				pattern[c] = turtle;
+			}
+			flag ? flag = false : l += 1;
+		}
+		else {
+			for (int i = 0; rows - f == 0 ? i <= rows - f : i < rows - f; ++i, c++, turtle += k) {
+				pattern[c] = turtle;
+			}
+			f += 1;
+		}
 	}
-	cin >> rows;
-	printMat(mat, rows, colums, 0, 0);
-	cin >> rows;
 }
 
-template <const int sizeArr>
-void shakerSort(int arr[]) {
+void createVertPointersPattern(int** pattern, int** mat, int rows, int colums) {
+	int* turtle = &mat[0][0];
+	int k, c = 1;
+	char side = 'd';
+	while (c < rows * colums) {
+		switch (side) {
+		case 'd':
+			k = colums;
+			side = 'u';
+			break;
+		case 'u':
+			k = -colums;
+			side = 'd';
+			break;
+		}
+		for (int i = 0; i < rows; ++i, ++c, turtle += k) {
+			pattern[c - 1] = turtle;
+		}
+		turtle++;
+		turtle -= k;
+	}
+}
+
+void createVertPointersObliq(int** pattern, int** mat, int rows, int colums) {
+	int* turtle = &mat[0][0];
+	int k, ln = 1 , lp = 0, c = 0;
+	char side = 'd';
+	while (c + 1 < rows * colums) {
+		switch (side) {
+		case 'd':
+			k = colums - 1;
+			while (ln > lp) {
+				pattern[c] = turtle;
+				turtle += k;
+				c++;
+			}
+			turtle -= k;
+			
+			turtle += colums;
+			if (turtle < &mat[0][0] || turtle > &mat[rows - 1][colums - 1]) {
+				turtle -= colums;
+				turtle++;
+			}
+
+			side = 'u';
+			break;
+		case 'u':
+			k = -colums + 1;
+
+			while (turtle >= &mat[0][0] && turtle <= &mat[rows - 1][colums - 1]) {
+				pattern[c] = turtle;
+				turtle += k;
+				c++;
+			}
+			turtle -= k;
+
+			turtle++;
+			if (turtle < &mat[0][0] || turtle > &mat[rows - 1][colums - 1]) {
+				turtle--;
+				turtle += colums;
+			}
+
+			side = 'd';
+			break;
+		}
+	}
+}
+
+void bubbleSort(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	int x, y, el;
 	bool isChanged = true;
-	int start = 0, end = sizeArr - 1;
+	int** end = &pattern[rows * colums - 1];
 	while (isChanged == true) {
 		isChanged = false;
-		for (int i = start; i < end; ++i) {
-			if (arr[i + 1] < arr[i]) {
-				swap(arr[i + 1], arr[i]);
+		for (int** i = pattern; i < end; ++i) {
+			if (**(i + 1) < **i) {
+				swap(**(i + 1), **i);
 				isChanged = true;
 			}
+			printEl(i - pattern, 'w', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+			Sleep(speed);
 		}
+		printEl((end - pattern), 'g', pattern, rows, colums);
+		--end;
+	}
+	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
+	printMat(mat, rows, colums, 0, 0);
+	Sleep(speed);
+	SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+}
+
+void shakerSort(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	bool isChanged = true;
+	int x, y, el;
+	int** start = pattern, ** end = &pattern[rows * colums - 1];
+	while (isChanged == true) {
+		isChanged = false;
+		for (int** i = start; i < end; ++i) {
+			if (**(i + 1) < **i) {
+				swap(**(i + 1), **i);
+				isChanged = true;
+			}
+			printEl(i - pattern, 'w', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+			Sleep(speed);
+		}
+		printEl(end - pattern, 'g', pattern, rows, colums);
 		--end;
 		if (!isChanged) {
 			break;
 		}
-		for (int i = end; i > start; --i) {
-			if (arr[i - 1] > arr[i]) {
-				swap(arr[i - 1], arr[i]);
+		for (int** i = end; i > start; --i) {
+			if (**i < **(i - 1)) {
+				swap(**i, **(i - 1));
 				isChanged = true;
 			}
+			printEl(i - pattern, 'w', pattern, rows, colums);
+			printEl((i - pattern) - 1, 'r', pattern, rows, colums);
+			Sleep(speed);
 		}
+		printEl(start - pattern, 'g', pattern, rows, colums);
 		++start;
 	}
+	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
+	printMat(mat, rows, colums, 0, 0);
+	Sleep(speed);
+	SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 
-template <const int sizeArr>
-void combSort(int arr[]) {
+void combSort(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	int x, y, el;
 	float k = 1.247;
 	bool isChanged = true;
-	int end = sizeArr - 1, gap = sizeArr - 1;
+	int** end = &pattern[rows * colums - 1], gap = rows*colums - 1;
 	while (gap != 1) {
-		for (int i = 0; i < sizeArr - gap; ++i) {
-			if (arr[i] > arr[i + gap]) {
-				swap(arr[i + gap], arr[i]);
+		for (int** i = pattern; i - pattern < (end - pattern) + 1 - gap; ++i) {
+
+			printEl(i - pattern, 'r', pattern, rows, colums);
+			printEl((i - pattern) + gap, 'b', pattern, rows, colums);
+			Sleep(speed/2);
+
+			if (**i > **(i + gap)) {
+				swap(**(i + gap), **i);
+				printEl(i - pattern, 'b', pattern, rows, colums);
+				printEl((i - pattern) + gap, 'r', pattern, rows, colums);
 			}
+
+			Sleep(speed/2);
+			printEl(i - pattern, 'w', pattern, rows, colums);
+			printEl((i - pattern) + gap, 'w', pattern, rows, colums);
 		}
 		gap /= k;
 	}
 
 	while (isChanged == true) {
 		isChanged = false;
-		for (int i = 0; i < end; ++i) {
-			if (arr[i + 1] < arr[i]) {
-				swap(arr[i + 1], arr[i]);
+		for (int** i = pattern; i < end; ++i) {
+			if (**(i + 1) < **i) {
+				swap(**(i + 1), **i);
 				isChanged = true;
 			}
+			printEl(i - pattern, 'w', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+			Sleep(speed);
 		}
+		printEl((end - pattern), 'w', pattern, rows, colums);
 		--end;
 	}
+	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
+	printMat(mat, rows, colums, 0, 0);
+	Sleep(speed);
+	SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 
-template <const int sizeArr>
-void insertSort(int arr[]) {
-	int end = sizeArr - 1, stepCount;
-	for (int start = 1; start <= end; ++start) {
+void insertSort(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	int x, y, el;
+	int** end = &pattern[rows * colums - 1], stepCount;
+	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
+	for (int** start = pattern + 1; start <= end; ++start) {
 		stepCount = 0;
-		while (arr[start - stepCount] < arr[start - 1 - stepCount]) {
-			swap(arr[start - stepCount], arr[start - 1 - stepCount]);
+		while (**(start - stepCount) < **(start - 1 - stepCount)) {
+			swap(**(start - stepCount), **(start - 1 - stepCount));
+
+			printEl((start - pattern) - stepCount, 'g', pattern, rows, colums);
+			printEl((start - pattern) - 1 - stepCount, 'r', pattern, rows, colums);
+			Sleep(speed);
+
 			++stepCount;
 		}
+		printEl((start - pattern) - stepCount, 'g', pattern, rows, colums);
+		printEl((start - pattern) - 1 - stepCount, 'g', pattern, rows, colums);
+		Sleep(speed);
+
 	}
 }
 
-void quickSortSep(int arr[], int start, int end) {
-	int pivot = start;
+void quickSortSep(int** pattern, int colums, int rows, int** start, int** end, int speed) {
+	int el, x, y;
+	int** pivot = start;
 	++start;
+	for (int** i = pattern; i < pivot; ++i) {
+		printEl(i - pattern, 'g', pattern, rows, colums);
+	}
+
 	if (start >= end) {
 		return;
 	}
-	for (int i = start; i <= end; ++i) {
-		if (arr[i] < arr[pivot]) {
-			swap(arr[start], arr[i]);
+
+	printEl(pivot - pattern, 'b', pattern, rows, colums);
+	Sleep(speed*0.7);
+
+	for (int** i = start; i <= end; ++i) {
+
+		printEl(i - pattern, 'r', pattern, rows, colums);
+		Sleep(speed * 0.7);
+
+		if (**i < **pivot) {
+			swap(**i, **start);
+
+			printEl(start - pattern, 'y', pattern, rows, colums);
+
 			++start;
 		}
+		if (start - 1 != i && i != end) {
+			printEl(i - pattern, 'v', pattern, rows, colums);
+		}
+		else if (start - 1 != i && i - pattern == rows * colums - 1) {
+			printEl(i - pattern, 'w', pattern, rows, colums);
+		}
+		else if (start - 1 != i) {
+			printEl(i - pattern, 'g', pattern, rows, colums);
+		}
+		Sleep(speed * 0.7);
 	}
-	swap(arr[pivot], arr[start - 1]);
-	quickSortSep(arr, pivot, start - 2);
-	quickSortSep(arr, start, end);
+	swap(**pivot, **(start - 1));
+
+	for (int** i = pivot; i < end; ++i) {
+		printEl(i - pattern, 'w', pattern, rows, colums);
+	}
+	printEl((start - pattern) - 1, 'g', pattern, rows, colums);
+
+	quickSortSep(pattern, colums, rows, pivot, start - 1, speed);
+	quickSortSep(pattern, colums, rows, start, end, speed);
 }
 
-template <const int sizeArr>
-void quickSortMain(int arr[]) {
-	quickSortSep(arr, 0, sizeArr - 1);
+void quickSortMain(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	quickSortSep(pattern, colums, rows, pattern, pattern + (rows * colums - 1), speed);
 }
 
-void mergeSortStep(int arr[], const int sizeArr, int start, int end, int twoSortArr[]) {
+void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int twoSortArr[], int speed) {
 	int parity = (end - start + 1) % 2;
+	for (int i = start; i <= end; ++i) {
+		printEl(i, 'y', pattern, rows, colums);
+	}
+	Sleep(speed);
 	if (end - start <= 1) {
-		if (end - start == 1 && arr[end] < arr[start]) {
-			swap(arr[start], arr[end]);
+		if (end - start == 1 && *pattern[end] < *pattern[start]) {
+			printEl(start, 'v', pattern, rows, colums);
+			printEl(end, 'r', pattern, rows, colums);
+			Sleep(speed / 2);
+			swap(*pattern[start], *pattern[end]);
+			printEl(start, 'r', pattern, rows, colums);
+			printEl(end, 'v', pattern, rows, colums);
+			Sleep(speed / 2);
+			printEl(start, 'w', pattern, rows, colums);
+			printEl(end, 'w', pattern, rows, colums);
+		}
+		for (int i = start; i <= end; ++i) {
+			printEl(i, 'w', pattern, rows, colums);
 		}
 		return;
 	}
-	mergeSortStep(arr, sizeArr, start, (end + start) / 2 - parity, twoSortArr);
-	mergeSortStep(arr, sizeArr, (end + start) / 2 + 1 - parity, end, twoSortArr);
+	for (int i = start; i <= end; ++i) {
+		printEl(i, 'w', pattern, rows, colums);
+	}
+	Sleep(speed);
+	mergeSortStep(pattern, rows, colums, start, (end + start) / 2 - parity, twoSortArr, speed);
+	mergeSortStep(pattern, rows, colums, (end + start) / 2 + 1 - parity, end, twoSortArr, speed);
 	int ind = 0;
 	int lArrIndex = start, rArrIndex = (end + start) / 2 + 1 - parity;
 	for (int i = 0; i < (end - start + 1); ++i) {
 		if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
-			if (arr[lArrIndex] > arr[rArrIndex]) {
-				twoSortArr[ind] = arr[rArrIndex];
+			if (*pattern[lArrIndex] > *pattern[rArrIndex]) {
+				twoSortArr[ind] = *pattern[rArrIndex];
 				++rArrIndex;
 				++ind;
 			}
 			else {
-				twoSortArr[ind] = arr[lArrIndex];
+				twoSortArr[ind] = *pattern[lArrIndex];
 				++lArrIndex;
 				++ind;
 			}
 		}
 		else if (rArrIndex > end) {
-			twoSortArr[ind] = arr[lArrIndex];
+			twoSortArr[ind] = *pattern[lArrIndex];
 			++lArrIndex;
 			++ind;
 		}
 		else {
-			twoSortArr[ind] = arr[rArrIndex];
+			twoSortArr[ind] = *pattern[rArrIndex];
 			++rArrIndex;
 			++ind;
 		}
 	}
 	ind = 0;
 	for (int i = start; i <= end; ++i) {
-		arr[i] = twoSortArr[ind];
+		*pattern[i] = twoSortArr[ind];
 		++ind;
 	}
 }
 
-template <const int sizeArr>
-void mergeSortMain(int arr[]) {
-	int twoSortArr[sizeArr];
-	mergeSortStep(arr, sizeArr, 0, sizeArr - 1, twoSortArr);
+void mergeSortMain(int** mat, int** pattern, int rows, int colums, int speed) {
+	system("cls");
+	printMat(mat, rows, colums, 0, 0);
+	int* twoSortArr = new int[rows * colums];
+	mergeSortStep(pattern, rows, colums, 0, rows * colums - 1, twoSortArr, speed);
+	delete[] twoSortArr;
+}
+
+void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secondMatColums, int speed){
+	system("cls");
+	int** secondMat = new int* [rows];
+	int* secondArr = new int[rows * secondMatColums];
+	for (int i = 0; i < rows; i++) {
+		secondMat[i] = secondArr + i * secondMatColums;
+	}
+	srand(time(0));
+	for (int i = 0; i < rows * secondMatColums;++i) {
+		secondArr[i] = rand() % (rows * secondMatColums) + 1;
+	}
+
+	printMat(mat, rows, colums, 0, 0);
+	destCoord.X = (colums + 1)*5;
+	destCoord.Y = rows / 2;
+	SetConsoleCursorPosition(hStdout, destCoord);
+	cout << "*" << '\r';
+	cout.flush();
+	printMat(secondMat, rows, secondMatColums, (colums + 2)*5, 0);
+
+	destCoord.X = (colums + 3 + secondMatColums) * 5;
+	destCoord.Y = rows / 2;
+	SetConsoleCursorPosition(hStdout, destCoord);
+	cout << "=" << '\r';
+	cout.flush();
+
+	int** multipMat = new int* [rows];
+	int* multipArr = new int[rows * secondMatColums];
+	for (int i = 0; i < rows; i++) {
+		multipMat[i] = multipArr + i * secondMatColums;
+	}
+	for (int i = 0; i < rows * secondMatColums;++i) {
+		multipArr[i] = 0;
+	}
+
+	int *firP = &mat[0][0], * secP = secondArr, * mulP = multipArr;
+	int x = (colums + 4 + secondMatColums) * 5, y = 0;
+	int c;
+	for (;mulP - multipArr < rows * secondMatColums; ++mulP) {
+
+		for (int i = 0; i < colums; ++firP, secP += secondMatColums, ++i) {
+			*mulP += (*firP) * (*secP);
+			c = 1;
+		}
+		secP += 1 - secondMatColums * colums;
+		firP -= colums;
+		prN(*mulP, x, y);
+		if ((mulP - multipArr + 1) % secondMatColums == 0 ) {
+			firP += colums;
+			y++;
+			secP -= secondMatColums;
+			x -= secondMatColums * 5;
+
+		}
+		x+= 5;
+		Sleep(speed*2);
+	}
+
+	if (firstArr) {
+		delete[] firstArr;
+	}
+	delete[] secondArr;
+	int* arr = new int[rows * secondMatColums];
+	for (int i = 0; i < rows; i++) {
+		mat[i] = arr + i * secondMatColums;
+	}
+	for (int i = 0; i < rows * secondMatColums; i++) {
+		arr[i] = multipArr[i];
+	}
+	delete[] multipArr;
+	delete[] secondMat;
+	delete[] multipMat;
+	colums = secondMatColums;
 }
 
 int main(){
 	setlocale(0, "");
-	int rows, colums, number = 0;
+	int rows, colums, secondMatColums, number;
+	int speed = 100;
 	int choice = 0;
 	cout << "Введите через пробел кол-во строк и стобцов:\n";
 	cin >> rows >> colums;
 	int** mat = new int*[rows];
 	int* arr = new int [rows * colums];
+	int** pattern = new int* [rows * colums];
 	for (int i = 0; i < rows; i++){
 		mat[i] = arr + i * colums;
 	}
@@ -399,6 +700,7 @@ int main(){
 			<< "3) Увеличить/уменьшить все элементы в/на n раз/число\n"
 			<< "4) Отсортировать\n"
 			<< "5) Умножить на другую матрицу\n"
+			<< "6) Изменить скорость отрисовки\n"
 			<< "-1) Закончить программу\n";
 		cin >> choice;
 		system("cls");
@@ -412,10 +714,13 @@ int main(){
 				cin >> choice;
 				switch (choice) {
 				case 1:
-					fillMatSpiral(mat, rows, colums);
+					fillMatSpiral(mat, rows, colums, speed);
 					break;
 				case 2:
-					fillMatVert(mat, rows, colums);
+					fillMatVert(mat, rows, colums, speed);
+					break;
+				case 3:
+
 					break;
 				}
 			} while (choice != 0);
@@ -496,49 +801,79 @@ int main(){
 			break;
 		case 4: // Отсортировать
 			do {
-				system("cls");
-				cout << "Ваша матрица:";
-				printMat(mat, rows, colums, 0, 1);
-				cout << "\nКакую сортировку использовать?:\n"
-					<< "1) Bubble sort\n"
-					<< "2) Shaker sort\n"
-					<< "3) Comb sort\n"
-					<< "5) Insert sort\n"
-					<< "6) Quck sort\n"
-					<< "7) Merge sort\n"
-					<< "0) Назад\n";
-				cin >> choice;
-				switch (choice) {
-				case 1:
-					bubbleSort( mat, rows, colums);
-					break;
-				case 2:
-					
-					break;
-				case 3:
-					
-					break;
-				case 4:
-					
-					break;
-				case 5:
-
-					break;
-				case 6:
-
-					break;
-				case 7:
-
-					break;
-				}
+			system("cls");
+			cout << "Ваша матрица:";
+			printMat(mat, rows, colums, 0, 1);
+			cout << "\nКак отсортировать?:\n"
+				<< "1) Спиралью\n"
+				<< "2) Вертикально(вниз-вверх-вниз-...)\n"
+				<< "3) Наискосок\n"
+				<< "0) Назад\n";
+			cin >> choice;
+			switch (choice) {
+			case 1:
+				createSpiralPointersPattern(pattern, mat, rows, colums);
+				break;
+			case 2:
+				createVertPointersPattern(pattern, mat, rows, colums);
+				break;
+			case 3:
+				createVertPointersObliq(pattern, mat, rows, colums);
+				break;
+			}
+			if (choice == 1 || choice == 2 || choice == 3) {
+				break;
+			}
 			} while (choice != 0);
+			while (choice != 0){
+			system("cls");
+			cout << "Ваша матрица:";
+			printMat(mat, rows, colums, 0, 1);
+			cout << "\nКакую сортировку использовать?:\n"
+				<< "1) Bubble sort\n"
+				<< "2) Shaker sort\n"
+				<< "3) Comb sort\n"
+				<< "4) Insert sort\n"
+				<< "5) Quck sort\n"
+				<< "6) Merge sort\n"
+				<< "0) Назад\n";
+			cin >> choice;
+			switch (choice) {
+			case 1:
+				bubbleSort( mat, pattern, rows, colums, speed);
+				break;
+			case 2:
+				shakerSort(mat, pattern, rows, colums, speed);
+				break;
+			case 3:
+				combSort(mat, pattern, rows, colums, speed);
+				break;
+			case 4:
+				insertSort(mat, pattern, rows, colums, speed);
+				break;
+			case 5:
+				quickSortMain(mat, pattern, rows, colums, speed);
+				break;
+			case 6:
+				mergeSortMain(mat, pattern, rows, colums, speed);
+				break;
+			}
+			}
 			break;
 		case 5: // Умножить на другую матрицу
-
+			cout << "Введите кол-во стобцов матрицы на которую будете умножать :  ";
+			cin >> secondMatColums;
+			multiplicationMat(arr, mat, rows, colums, secondMatColums, speed);
+			arr = &mat[0][0];
+			break;
+		case 6: // Изменить скорость отрисовки
+			cout << "нынешнее значение : " << speed << "\n";
+			cout << "Введите желаемое значение(0 - очень быстро 300< - очень медленно ) :  ";
+			cin >> speed;
 			break;
 		}
 	} while (choice != -1);
-	//delete[] arr;
-	cin >> rows;
+	delete[] arr;
+	delete[] mat;
 	return 0;
 }
