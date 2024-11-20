@@ -458,17 +458,18 @@ void insertSort(int** mat, int** pattern, int rows, int colums, int speed) {
 	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
 	for (int** start = pattern + 1; start <= end; ++start) {
 		stepCount = 0;
-		while (**(start - stepCount) < **(start - 1 - stepCount)) {
+		while (*(start - stepCount) != pattern[0] && **(start - stepCount) < **(start - 1 - stepCount)) {
 			swap(**(start - stepCount), **(start - 1 - stepCount));
 
 			printEl((start - pattern) - stepCount, 'g', pattern, rows, colums);
 			printEl((start - pattern) - 1 - stepCount, 'r', pattern, rows, colums);
 			Sleep(speed);
-
 			++stepCount;
 		}
 		printEl((start - pattern) - stepCount, 'g', pattern, rows, colums);
-		printEl((start - pattern) - 1 - stepCount, 'g', pattern, rows, colums);
+		if (*(start - stepCount) != pattern[0]) {
+			printEl((start - pattern) - 1 - stepCount, 'g', pattern, rows, colums);
+		}
 		Sleep(speed);
 
 	}
@@ -601,14 +602,14 @@ void mergeSortMain(int** mat, int** pattern, int rows, int colums, int speed) {
 
 void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secondMatColums, int speed){
 	system("cls");
-	int** secondMat = new int* [rows];
-	int* secondArr = new int[rows * secondMatColums];
-	for (int i = 0; i < rows; i++) {
+	int** secondMat = new int* [colums];
+	int* secondArr = new int[colums * secondMatColums];
+	for (int i = 0; i < colums; i++) {
 		secondMat[i] = secondArr + i * secondMatColums;
 	}
 	srand(time(0));
-	for (int i = 0; i < rows * secondMatColums;++i) {
-		secondArr[i] = rand() % (rows * secondMatColums) + 1;
+	for (int i = 0; i < colums * secondMatColums;++i) {
+		secondArr[i] = rand() % (colums * secondMatColums) + 1;
 	}
 
 	printMat(mat, rows, colums, 0, 0);
@@ -672,6 +673,7 @@ void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secon
 	delete[] secondMat;
 	delete[] multipMat;
 	colums = secondMatColums;
+	cin >> rows;
 }
 
 int main(){
