@@ -134,6 +134,23 @@ void fillMatVert(int** mat, int rows, int colums, int speed) {
 	SetConsoleCursorPosition(hStdout, destCoord);
 }
 
+void fillMatSimple(int** mat, int rows, int colums, int speed) {
+	system("cls");
+	int* turtle = &mat[0][0];
+	int c = 0, x = 0, y = 0;
+	srand(time(0));
+	for (int i = 0; i < rows*colums; ++i, turtle++, c++) {
+		*turtle = rand() % (rows * colums) + 1;
+		x = (c % colums) * 5;
+		y = (c + 1 == colums * rows ? rows - 1 : c / colums);
+		prN(*turtle, x, y);
+		Sleep(speed);
+	}
+	destCoord.X = 0;
+	destCoord.Y = rows + 1;
+	SetConsoleCursorPosition(hStdout, destCoord);
+}
+
 void replaceBlocksRound(int** mat, int rows, int colums) {
 	int* turtle = &mat[0][0];
 	int* turtle2;
@@ -337,6 +354,13 @@ void createVertPointersObliq(int** pattern, int** mat, int rows, int colums) {
 	}
 }
 
+void createVertPointersSimple(int** pattern, int** mat, int rows, int colums) {
+	int* turtle = &mat[0][0];
+	for (int i = 0; i < rows * colums; ++i, turtle++) {
+		pattern[i] = turtle;
+	}
+}
+
 void bubbleSort(int** mat, int** pattern, int rows, int colums, int speed) {
 	system("cls");
 	printMat(mat, rows, colums, 0, 0);
@@ -346,13 +370,20 @@ void bubbleSort(int** mat, int** pattern, int rows, int colums, int speed) {
 	while (isChanged == true) {
 		isChanged = false;
 		for (int** i = pattern; i < end; ++i) {
+			printEl(i - pattern, 'r', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'b', pattern, rows, colums);
+			Sleep(speed);
 			if (**(i + 1) < **i) {
 				swap(**(i + 1), **i);
 				isChanged = true;
+
+				printEl(i - pattern, 'b', pattern, rows, colums);
+				printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+				Sleep(speed);
 			}
 			printEl(i - pattern, 'w', pattern, rows, colums);
 			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
-			Sleep(speed);
+			Sleep(speed/2);
 		}
 		printEl((end - pattern), 'g', pattern, rows, colums);
 		--end;
@@ -535,16 +566,16 @@ void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int 
 	for (int i = start; i <= end; ++i) {
 		printEl(i, 'y', pattern, rows, colums);
 	}
-	Sleep(speed);
+	Sleep(speed*2);
 	if (end - start <= 1) {
 		if (end - start == 1 && *pattern[end] < *pattern[start]) {
 			printEl(start, 'v', pattern, rows, colums);
 			printEl(end, 'r', pattern, rows, colums);
-			Sleep(speed / 2);
+			Sleep(speed);
 			swap(*pattern[start], *pattern[end]);
 			printEl(start, 'r', pattern, rows, colums);
 			printEl(end, 'v', pattern, rows, colums);
-			Sleep(speed / 2);
+			Sleep(speed);
 			printEl(start, 'w', pattern, rows, colums);
 			printEl(end, 'w', pattern, rows, colums);
 		}
@@ -561,7 +592,14 @@ void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int 
 	mergeSortStep(pattern, rows, colums, (end + start) / 2 + 1 - parity, end, twoSortArr, speed);
 	int ind = 0;
 	int lArrIndex = start, rArrIndex = (end + start) / 2 + 1 - parity;
-	for (int i = 0; i < (end - start + 1); ++i) {
+	for (int i = start; i <= (end + start) / 2 - parity; ++i) {
+		printEl(i, 'v', pattern, rows, colums);
+	}
+	for (int i = (end + start) / 2 + 1 - parity; i <= end; ++i) {
+		printEl(i, 'r', pattern, rows, colums);
+	}
+	Sleep(speed * 2);
+	for (int i = 0; i <= end - start; ++i) {
 		if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
 			if (*pattern[lArrIndex] > *pattern[rArrIndex]) {
 				twoSortArr[ind] = *pattern[rArrIndex];
@@ -590,6 +628,10 @@ void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int 
 		*pattern[i] = twoSortArr[ind];
 		++ind;
 	}
+	for (int i = start; i <= end; ++i) {
+		printEl(i, 'g', pattern, rows, colums);
+	}
+	Sleep(speed * 3);
 }
 
 void mergeSortMain(int** mat, int** pattern, int rows, int colums, int speed) {
@@ -676,7 +718,7 @@ void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secon
 	cin >> rows;
 }
 
-int main(){
+int main(){ 
 	setlocale(0, "");
 	int rows, colums, secondMatColums, number;
 	int speed = 100;
@@ -712,6 +754,7 @@ int main(){
 				cout << "Выберите способ заполнения матрицы:\n"
 					<< "1) По спирали\n"
 					<< "2) По вертикали\n"
+					<< "3) Слева направо\n"
 					<< "0) Назад\n";
 				cin >> choice;
 				switch (choice) {
@@ -722,7 +765,7 @@ int main(){
 					fillMatVert(mat, rows, colums, speed);
 					break;
 				case 3:
-
+					fillMatSimple(mat, rows, colums, speed);
 					break;
 				}
 			} while (choice != 0);
@@ -809,7 +852,8 @@ int main(){
 			cout << "\nКак отсортировать?:\n"
 				<< "1) Спиралью\n"
 				<< "2) Вертикально(вниз-вверх-вниз-...)\n"
-				<< "3) Наискосок\n"
+				<< "3) Слева направо\n"
+				<< "4) Наискосок\n"
 				<< "0) Назад\n";
 			cin >> choice;
 			switch (choice) {
@@ -820,10 +864,13 @@ int main(){
 				createVertPointersPattern(pattern, mat, rows, colums);
 				break;
 			case 3:
+				createVertPointersSimple(pattern, mat, rows, colums);
+				break;
+			case 4:
 				createVertPointersObliq(pattern, mat, rows, colums);
 				break;
 			}
-			if (choice == 1 || choice == 2 || choice == 3) {
+			if ( 0 < choice < 5) {
 				break;
 			}
 			} while (choice != 0);
