@@ -6,7 +6,7 @@
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
-void prN(int number, int x, int y) {
+void printNumber(int number, int x, int y) {
 	destCoord.X = x;
 	destCoord.Y = y;
 	SetConsoleCursorPosition(hStdout, destCoord);
@@ -36,7 +36,7 @@ void printEl(int number, char colour, int** pattern, int rows, int colums) {
 	el = pattern[number] - pattern[0];
 	x = (el % colums) * 5;
 	y = (el + 1 == colums * rows ? rows - 1 : el / colums);
-	prN(*pattern[number], x, y);
+	printNumber(*pattern[number], x, y);
 	SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 }
 
@@ -44,7 +44,7 @@ void printMat(int** mat, int rows, int colums, int x, int y) {
 	//system("cls");
 	int* turtle = &mat[0][0];
 	for (int i = 1; i <= rows * colums; ++i, ++turtle, x+=5) {
-		prN(*turtle, x, y);
+		printNumber(*turtle, x, y);
 		if (i % colums == 0){
 			++y;
 			x -=5* colums;
@@ -82,7 +82,7 @@ void fillMatSpiral(int** mat, int rows, int colums, int speed) {
 		if (side == 'd' || side == 'u') {
 			for (int i = 0; colums - l == 0 ? i <= colums - l : i < colums - l ; ++i, c++, side == 'd' ? x += 5 : x -= 5, turtle += k) {
 				*turtle = rand() % (rows*colums)  + 1;
-				prN(*turtle, x, y);
+				printNumber(*turtle, x, y);
 				Sleep(speed);
 			}
 			flag ? flag = false : l += 1;
@@ -90,7 +90,7 @@ void fillMatSpiral(int** mat, int rows, int colums, int speed) {
 		else {
 			for (int i = 0; rows - f == 0? i <= rows - f : i < rows - f; ++i, c++, side == 'l' ? y += 1 : y -= 1, turtle += k) {
 				*turtle = rand() % (rows*colums)  + 1;
-				prN(*turtle, x, y);
+				printNumber(*turtle, x, y);
 				Sleep(speed);
 			}
 			f += 1;
@@ -120,7 +120,7 @@ void fillMatVert(int** mat, int rows, int colums, int speed) {
 		}
 		for (int i = 0; i < rows; ++i, ++c, turtle += k) {
 			*turtle = rand() % (rows*colums)  + 1;
-			prN(*turtle, x, y);
+			printNumber(*turtle, x, y);
 			Sleep(speed);
 			side == 'u' ? y += 1 : y -= 1;
 		}
@@ -143,7 +143,7 @@ void fillMatSimple(int** mat, int rows, int colums, int speed) {
 		*turtle = rand() % (rows * colums) + 1;
 		x = (c % colums) * 5;
 		y = (c + 1 == colums * rows ? rows - 1 : c / colums);
-		prN(*turtle, x, y);
+		printNumber(*turtle, x, y);
 		Sleep(speed);
 	}
 	destCoord.X = 0;
@@ -371,15 +371,15 @@ void bubbleSort(int** mat, int** pattern, int rows, int colums, int speed) {
 		isChanged = false;
 		for (int** i = pattern; i < end; ++i) {
 			printEl(i - pattern, 'r', pattern, rows, colums);
-			printEl((i - pattern) + 1, 'b', pattern, rows, colums);
-			Sleep(speed);
+			printEl((i - pattern) + 1, 'y', pattern, rows, colums);
+			Sleep(speed/2);
 			if (**(i + 1) < **i) {
 				swap(**(i + 1), **i);
 				isChanged = true;
 
-				printEl(i - pattern, 'b', pattern, rows, colums);
+				printEl(i - pattern, 'y', pattern, rows, colums);
 				printEl((i - pattern) + 1, 'r', pattern, rows, colums);
-				Sleep(speed);
+				Sleep(speed/2);
 			}
 			printEl(i - pattern, 'w', pattern, rows, colums);
 			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
@@ -403,13 +403,20 @@ void shakerSort(int** mat, int** pattern, int rows, int colums, int speed) {
 	while (isChanged == true) {
 		isChanged = false;
 		for (int** i = start; i < end; ++i) {
+			printEl(i - pattern, 'r', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'y', pattern, rows, colums);
+			Sleep(speed / 2);
 			if (**(i + 1) < **i) {
 				swap(**(i + 1), **i);
 				isChanged = true;
+
+				printEl(i - pattern, 'y', pattern, rows, colums);
+				printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+				Sleep(speed / 2);
 			}
 			printEl(i - pattern, 'w', pattern, rows, colums);
 			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
-			Sleep(speed);
+			Sleep(speed / 2);
 		}
 		printEl(end - pattern, 'g', pattern, rows, colums);
 		--end;
@@ -417,13 +424,20 @@ void shakerSort(int** mat, int** pattern, int rows, int colums, int speed) {
 			break;
 		}
 		for (int** i = end; i > start; --i) {
+			printEl(i - pattern, 'r', pattern, rows, colums);
+			printEl((i - pattern) - 1, 'y', pattern, rows, colums);
+			Sleep(speed / 2);
 			if (**i < **(i - 1)) {
 				swap(**i, **(i - 1));
 				isChanged = true;
+
+				printEl(i - pattern, 'y', pattern, rows, colums);
+				printEl((i - pattern) - 1, 'r', pattern, rows, colums);
+				Sleep(speed / 2);
 			}
 			printEl(i - pattern, 'w', pattern, rows, colums);
 			printEl((i - pattern) - 1, 'r', pattern, rows, colums);
-			Sleep(speed);
+			Sleep(speed / 2);
 		}
 		printEl(start - pattern, 'g', pattern, rows, colums);
 		++start;
@@ -452,6 +466,7 @@ void combSort(int** mat, int** pattern, int rows, int colums, int speed) {
 				swap(**(i + gap), **i);
 				printEl(i - pattern, 'b', pattern, rows, colums);
 				printEl((i - pattern) + gap, 'r', pattern, rows, colums);
+				Sleep(speed / 2);
 			}
 
 			Sleep(speed/2);
@@ -464,15 +479,21 @@ void combSort(int** mat, int** pattern, int rows, int colums, int speed) {
 	while (isChanged == true) {
 		isChanged = false;
 		for (int** i = pattern; i < end; ++i) {
+			printEl(i - pattern, 'r', pattern, rows, colums);
+			printEl((i - pattern) + 1, 'y', pattern, rows, colums);
+			Sleep(speed / 2);
 			if (**(i + 1) < **i) {
 				swap(**(i + 1), **i);
 				isChanged = true;
+
+				printEl(i - pattern, 'y', pattern, rows, colums);
+				printEl((i - pattern) + 1, 'r', pattern, rows, colums);
+				Sleep(speed / 2);
 			}
 			printEl(i - pattern, 'w', pattern, rows, colums);
 			printEl((i - pattern) + 1, 'r', pattern, rows, colums);
-			Sleep(speed);
+			Sleep(speed / 2);
 		}
-		printEl((end - pattern), 'w', pattern, rows, colums);
 		--end;
 	}
 	SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
@@ -519,12 +540,12 @@ void quickSortSep(int** pattern, int colums, int rows, int** start, int** end, i
 	}
 
 	printEl(pivot - pattern, 'b', pattern, rows, colums);
-	Sleep(speed*0.7);
+	Sleep(speed/2);
 
 	for (int** i = start; i <= end; ++i) {
 
 		printEl(i - pattern, 'r', pattern, rows, colums);
-		Sleep(speed * 0.7);
+		Sleep(speed/2);
 
 		if (**i < **pivot) {
 			swap(**i, **start);
@@ -542,7 +563,7 @@ void quickSortSep(int** pattern, int colums, int rows, int** start, int** end, i
 		else if (start - 1 != i) {
 			printEl(i - pattern, 'g', pattern, rows, colums);
 		}
-		Sleep(speed * 0.7);
+		Sleep(speed/2);
 	}
 	swap(**pivot, **(start - 1));
 
@@ -688,7 +709,7 @@ void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secon
 		}
 		secP += 1 - secondMatColums * colums;
 		firP -= colums;
-		prN(*mulP, x, y);
+		printNumber(*mulP, x, y);
 		if ((mulP - multipArr + 1) % secondMatColums == 0 ) {
 			firP += colums;
 			y++;
