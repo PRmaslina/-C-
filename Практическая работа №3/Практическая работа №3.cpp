@@ -32,6 +32,9 @@ void printEl(int number, char colour, int** pattern, int rows, int colums) {
 	case 'v':
 		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		break;
+	case 'l':
+		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		break;
 	}
 	el = pattern[number] - pattern[0];
 	x = (el % colums) * 5;
@@ -41,7 +44,6 @@ void printEl(int number, char colour, int** pattern, int rows, int colums) {
 }
 
 void printMat(int** mat, int rows, int colums, int x, int y) {
-	//system("cls");
 	int* turtle = &mat[0][0];
 	for (int i = 1; i <= rows * colums; ++i, ++turtle, x+=5) {
 		printNumber(*turtle, x, y);
@@ -170,7 +172,7 @@ void replaceBlocksRound(int** mat, int rows, int colums) {
 }
 
 void replaceBlocksObliq(int** mat, int rows, int colums) {
-	int* turtle = &mat[0][0];
+	int* turtle = &mat[0][0]; 
 	int* turtle2;
 	int rowsParity, columsParity;
 	rows % 2 == 0 ? rowsParity = 0 : rowsParity = 1;
@@ -306,51 +308,6 @@ void createVertPointersPattern(int** pattern, int** mat, int rows, int colums) {
 		}
 		turtle++;
 		turtle -= k;
-	}
-}
-
-void createVertPointersObliq(int** pattern, int** mat, int rows, int colums) {
-	int* turtle = &mat[0][0];
-	int k, ln = 1 , lp = 0, c = 0;
-	char side = 'd';
-	while (c + 1 < rows * colums) {
-		switch (side) {
-		case 'd':
-			k = colums - 1;
-			while (ln > lp) {
-				pattern[c] = turtle;
-				turtle += k;
-				c++;
-			}
-			turtle -= k;
-			
-			turtle += colums;
-			if (turtle < &mat[0][0] || turtle > &mat[rows - 1][colums - 1]) {
-				turtle -= colums;
-				turtle++;
-			}
-
-			side = 'u';
-			break;
-		case 'u':
-			k = -colums + 1;
-
-			while (turtle >= &mat[0][0] && turtle <= &mat[rows - 1][colums - 1]) {
-				pattern[c] = turtle;
-				turtle += k;
-				c++;
-			}
-			turtle -= k;
-
-			turtle++;
-			if (turtle < &mat[0][0] || turtle > &mat[rows - 1][colums - 1]) {
-				turtle--;
-				turtle += colums;
-			}
-
-			side = 'd';
-			break;
-		}
 	}
 }
 
@@ -619,31 +576,36 @@ void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int 
 	for (int i = (end + start) / 2 + 1 - parity; i <= end; ++i) {
 		printEl(i, 'r', pattern, rows, colums);
 	}
-	Sleep(speed * 2);
+	Sleep(speed * 3);
 	for (int i = 0; i <= end - start; ++i) {
 		if (lArrIndex <= (end + start) / 2 - parity && rArrIndex <= end) {
 			if (*pattern[lArrIndex] > *pattern[rArrIndex]) {
 				twoSortArr[ind] = *pattern[rArrIndex];
 				++rArrIndex;
 				++ind;
+				printEl(i + start, 'r', pattern, rows, colums);
 			}
 			else {
 				twoSortArr[ind] = *pattern[lArrIndex];
 				++lArrIndex;
 				++ind;
+				printEl(i + start, 'v', pattern, rows, colums);
 			}
 		}
 		else if (rArrIndex > end) {
 			twoSortArr[ind] = *pattern[lArrIndex];
 			++lArrIndex;
 			++ind;
+			printEl(i + start, 'v', pattern, rows, colums);
 		}
 		else {
 			twoSortArr[ind] = *pattern[rArrIndex];
 			++rArrIndex;
 			++ind;
+			printEl(i + start, 'r', pattern, rows, colums);
 		}
 	}
+	Sleep(speed * 3);
 	ind = 0;
 	for (int i = start; i <= end; ++i) {
 		*pattern[i] = twoSortArr[ind];
@@ -652,7 +614,7 @@ void mergeSortStep(int** pattern, int rows, int colums, int start, int end, int 
 	for (int i = start; i <= end; ++i) {
 		printEl(i, 'g', pattern, rows, colums);
 	}
-	Sleep(speed * 3);
+	Sleep(speed);
 }
 
 void mergeSortMain(int** mat, int** pattern, int rows, int colums, int speed) {
@@ -736,7 +698,6 @@ void multiplicationMat(int* firstArr,int** mat, int rows, int &colums, int secon
 	delete[] secondMat;
 	delete[] multipMat;
 	colums = secondMatColums;
-	cin >> rows;
 }
 
 int main(){ 
@@ -744,7 +705,7 @@ int main(){
 	int rows, colums, secondMatColums, number;
 	int speed = 100;
 	int choice = 0;
-	cout << "Введите через пробел кол-во строк и стобцов:\n";
+	cout << "Введите через пробел кол-во строк и столбцов:\n";
 	cin >> rows >> colums;
 	int** mat = new int*[rows];
 	int* arr = new int [rows * colums];
@@ -874,7 +835,6 @@ int main(){
 				<< "1) Спиралью\n"
 				<< "2) Вертикально(вниз-вверх-вниз-...)\n"
 				<< "3) Слева направо\n"
-				<< "4) Наискосок\n"
 				<< "0) Назад\n";
 			cin >> choice;
 			switch (choice) {
@@ -887,11 +847,8 @@ int main(){
 			case 3:
 				createVertPointersSimple(pattern, mat, rows, colums);
 				break;
-			case 4:
-				createVertPointersObliq(pattern, mat, rows, colums);
-				break;
 			}
-			if ( 0 < choice < 5) {
+			if ( 0 < choice < 4) {
 				break;
 			}
 			} while (choice != 0);
@@ -938,7 +895,7 @@ int main(){
 			break;
 		case 6: // Изменить скорость отрисовки
 			cout << "нынешнее значение : " << speed << "\n";
-			cout << "Введите желаемое значение(0 - очень быстро 300< - очень медленно ) :  ";
+			cout << "Введите желаемое значение(0 - очень быстро 200< - очень медленно ) :  ";
 			cin >> speed;
 			break;
 		}
