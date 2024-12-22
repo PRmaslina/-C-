@@ -1733,7 +1733,7 @@ char* firstWord(char* string) {
 	bool checkWord;
 	for (int i = 0, count = 1; i < lengthString; i += count, count = 1) {
 		checkWord = false;
-		while (isalpha(string[i + count - 1])) {
+		while (string[i + count - 1] != ' ' && string[i + count - 1] != '\0') {
 			if (tolower(string[i + count]) == tolower(string[i])) {
 				checkWord = true;
 			}
@@ -1745,13 +1745,13 @@ char* firstWord(char* string) {
 			lengthNewString += count;
 			count = 1;
 			newStr[count - 2 + last] = ' ';
-			while (isalpha(string[i + count - 1])) {
+			while (string[i + count - 1] != ' ' && string[i + count - 1] != '\0') {
 				newStr[count - 1 + last] = string[i + count - 1];
 				count++;
 			}
 		}
 	}
-	newStr[lengthNewString - 2] = '\0';
+	newStr[lengthNewString - 1] = '\0';
 	return newStr;
 }
 
