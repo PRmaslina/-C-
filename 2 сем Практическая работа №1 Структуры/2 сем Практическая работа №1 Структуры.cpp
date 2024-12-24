@@ -20,20 +20,17 @@ Student createNewstudent(string, char, int, int, int*, int*);
 
 void menu();
 void printStudents();
-Student* readCSV(string);
+Student* readCSV(int&, string);
 bool writeCSV(string);
 Student* tableRealloc(Student*, int, int);
+void printTable(Student*, int);
 
 int main() {
 	setlocale(0, "");
-	Student* studentsTable;
-	studentsTable = readCSV("Студенты.csv");
+	int rows;
+	Student* studentsTable = readCSV(rows, "Студенты.csv");;
+	printTable(studentsTable, rows);
 	//menu();
-	cout << "---------------------------------------------------------" << endl;
-	for (int i = 0; i < 3; i++) {
-		cout << setw(5) << studentsTable[i].number << " | " << setw(30) << studentsTable[i].name << " | " << setw(3) << studentsTable[i].sex << " | " << setw(8) << studentsTable[i].group << " |" << endl;
-		cout << "---------------------------------------------------------" << endl;
-	}
 	delete[] studentsTable;
 }
 
@@ -51,42 +48,51 @@ Student* tableRealloc(Student* table, int oldSize, int newSize) {
 	return newTable;
 }
 
-Student* readCSV(string fileName) {
+void printTable(Student* table, int rows) {
+	cout << "--------------------------------------------------------------" << endl;
+	for (int i = 0; i < rows; i++) {
+		cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " |" << endl;
+		cout << "--------------------------------------------------------------" << endl;
+	}
+}
+
+Student* readCSV(int& rows, string fileName) {
 	fstream file;
 	string line;
 	Student* table = new Student[1];
-	int count = 0;
 	file.open(fileName);
 	if (!file.is_open()) {
 		cout << "Файл не открыт\n";
 	}
 	else {
 		cout << "Файл открыт\n";
+		rows = 0;
 		while (getline(file, line)) {
 			for (int end = 0, start = 0, el = 0; end < line.length() + 1; ++end) {
 				if (line[end] == ';') {
 					switch (el) {
 					case 0:
-						table[count].number = line.substr(start, end - start);
+						table[rows].number = line.substr(start, end - start);
 						break;
 					case 1:
-						table[count].name = line.substr(start, end - start);
+						table[rows].name = line.substr(start, end - start);
 						break;
 					case 2:
-						table[count].sex = line.substr(start, end - start);
+						table[rows].sex = line.substr(start, end - start);
 						break;
 					case 3:
-						table[count].group = line.substr(start, end - start);
+						table[rows].group = line.substr(start, end - start);
 						break;
 					}
 					el++;
 					start = end + 1;
 				}
 			}
-			table = tableRealloc(table, (1 + count), (2 + count));
-			count++;
+			table = tableRealloc(table, (1 + rows), (2 + rows));
+			rows++;
 		}
 	}
+	table = tableRealloc(table, (2 + rows), (1 + rows));
 	return table;
 }
 
