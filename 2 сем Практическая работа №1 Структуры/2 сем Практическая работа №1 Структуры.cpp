@@ -3,6 +3,9 @@
 #include <windows.h>
 #include <fstream>
 #include <iomanip>
+#include <stdio.h>
+#include <conio.h>
+#include <cstdlib>
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
@@ -29,8 +32,8 @@ int main() {
 	setlocale(0, "");
 	int rows;
 	Student* studentsTable = readCSV(rows, "Студенты.csv");;
-	printTable(studentsTable, rows);
-	//menu();
+	//printTable(studentsTable, rows);
+	menu();
 	delete[] studentsTable;
 }
 
@@ -49,10 +52,10 @@ Student* tableRealloc(Student* table, int oldSize, int newSize) {
 }
 
 void printTable(Student* table, int rows) {
-	cout << "--------------------------------------------------------------" << endl;
+	cout << "------------------------------------------------------------------------------------" << endl;
 	for (int i = 0; i < rows; i++) {
-		cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " |" << endl;
-		cout << "--------------------------------------------------------------" << endl;
+		cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " | " << setw(10) << table[i].gradesDifTest << " | " << setw(6) << table[i].gradesSession << " |" << endl;
+		cout << "------------------------------------------------------------------------------------" << endl;
 	}
 }
 
@@ -65,9 +68,9 @@ Student* readCSV(int& rows, string fileName) {
 		cout << "Файл не открыт\n";
 	}
 	else {
-		cout << "Файл открыт\n";
 		rows = 0;
 		while (getline(file, line)) {
+			line += ';';
 			for (int end = 0, start = 0, el = 0; end < line.length() + 1; ++end) {
 				if (line[end] == ';') {
 					switch (el) {
@@ -83,6 +86,12 @@ Student* readCSV(int& rows, string fileName) {
 					case 3:
 						table[rows].group = line.substr(start, end - start);
 						break;
+					case 4:
+						table[rows].gradesDifTest = line.substr(start, end - start);
+						break;
+					case 5:
+						table[rows].gradesSession = line.substr(start, end - start);
+						break;
 					}
 					el++;
 					start = end + 1;
@@ -96,26 +105,81 @@ Student* readCSV(int& rows, string fileName) {
 	return table;
 }
 
-void printTable(Student* table) {
-	for (Student* i = table; i < table + (sizeof(table) / sizeof(Student)); i++) {
-		cout << i -> number << "  |  " << i -> name << "  |  " << i -> sex << "  |  " << i -> group << "  |  ";
-	}
-}
-
 void menu() {
 	int choise = 0;
+	int press = 0;
+	int x = 0, y = 0;
+	string menu[9] = { "Создание новой записи о студенте."
+		, "Внесение изменений в уже имеющуюся запись."
+		, "Данных о студентах."
+		, "Информация обо всех студентах группы N.N – инициализируется пользователем."
+		, "Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию."
+		, "Количество студентов мужского и женского пола.                                                           "
+		, "Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»"
+		, "Данные о студентах, имеющих номер в списке – k."
+		, "Выход" };
 	while (true) {
-		cout << "1.   Создание новой записи о студенте.\n"
-			<< "2.   Внесение изменений в уже имеющуюся запись.\n"
-			<< "3.   Данных о студентах.\n"
-			<< "4.   Информация обо всех студентах группы N.N – инициализируется пользователем.\n"
-			<< "5.   Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию.\n"
-			<< "6.   Количество студентов мужского и женского пола.\n"
-			<< "7.   Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»;\n"
-			<< "8.   Данные о студентах, имеющих номер в списке – k.\n"
-			<< "0.   Выход\n";
-		cin >> choise;
+		cout << "Создание новой записи о студенте.\n"
+			<< "Внесение изменений в уже имеющуюся запись.\n"
+			<< "Данных о студентах.\n"
+			<< "Информация обо всех студентах группы N.N – инициализируется пользователем.\n"
+			<< "Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию.\n"
+			<< "Количество студентов мужского и женского пола.\n"
+			<< "Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»;\n"
+			<< "Данные о студентах, имеющих номер в списке – k.\n"
+			<< "Выход\n";
+		while (_getch() != 0x0D) {
+			press = _getch();
+			switch (press) {
+			case 0x48:
+				destCoord.Y = y;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				SetConsoleTextAttribute(hStdout, 07);
+				cout << menu[choise] << "  ";
+				cout.flush();
+				if (choise == 0) {
+					choise = 8;
+					y = 8;
+				}
+				else {
+					choise--;
+					y--;
+				}
+				destCoord.Y = y;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				SetConsoleTextAttribute(hStdout, 240);
+				cout << "> " << menu[choise];
+				cout.flush();
+				break;
+			case 0x50:
+				destCoord.X = x;
+				destCoord.Y = y;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				SetConsoleTextAttribute(hStdout, 07);
+				cout << menu[choise] << "  ";
+				cout.flush();
+				if (choise == 8) {
+					choise = 0;
+					y = 0;
+				}
+				else {
+					choise++;
+					y++;
+				}
+				destCoord.X = x;
+				destCoord.Y = y;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				SetConsoleTextAttribute(hStdout, 240);
+				cout << "> " << menu[choise];
+				cout.flush();
+				break;
+			}
+		}
+		SetConsoleTextAttribute(hStdout, 07);
+
 		switch (choise) {
+		case 0:
+			break;
 		case 1:
 			break;
 		case 2:
@@ -131,8 +195,6 @@ void menu() {
 		case 7:
 			break;
 		case 8:
-			break;
-		case 0:
 			return;
 			break;
 		}
