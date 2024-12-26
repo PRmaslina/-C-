@@ -19,23 +19,26 @@ struct Student {
 	string gradesSession;// 3
 };
 
-Student createNewstudent(string, char, int, int, int*, int*);
-
+bool addStudent(string,int);
 void menu();
 void printStudents();
 Student* readCSV(int&, string);
 bool writeCSV(string);
 Student* tableRealloc(Student*, int, int);
 void printTable(Student*, int);
+//choiseMenu(string*, int, int = 0, int = 0);
+//printStringArr(string*, int, int = 0, int = 0);
 
 int main() {
 	setlocale(0, "");
 	int rows;
-	Student* studentsTable = readCSV(rows, "Студенты.csv");;
+	Student* studentsTable = readCSV(rows, "Студенты.csv");
+	addStudent("dfdsf", 3);
 	//printTable(studentsTable, rows);
-	menu();
+	//menu();
 	delete[] studentsTable;
 }
+
 
 Student* tableRealloc(Student* table, int oldSize, int newSize) {
 	Student* newTable = new Student[newSize];
@@ -57,6 +60,8 @@ void printTable(Student* table, int rows) {
 		cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " | " << setw(10) << table[i].gradesDifTest << " | " << setw(6) << table[i].gradesSession << " |" << endl;
 		cout << "------------------------------------------------------------------------------------" << endl;
 	}
+	cout << "     " << " | " << "                                   " << " | " << "   " << " | " << "        " << " | " << "          " << " | " << "      " << " |" << endl;
+	cout << "------------------------------------------------------------------------------------" << endl;
 }
 
 Student* readCSV(int& rows, string fileName) {
@@ -105,78 +110,91 @@ Student* readCSV(int& rows, string fileName) {
 	return table;
 }
 
-void menu() {
+int choiseMenu(string* menu, int countEl,int startX = 0,int startY = 0) {
 	int choise = 0;
 	int press = 0;
+	int x = startX, y = startY;
+	destCoord.Y = y;
+	destCoord.X = x;
+	for (int i = 0; i < countEl; ++i, ++y) {
+		destCoord.Y = y;
+		SetConsoleCursorPosition(hStdout, destCoord);
+		cout << menu[i];
+		cout.flush();
+	}
+	y = startY;
+	destCoord.Y = y;
+	SetConsoleCursorPosition(hStdout, destCoord);
+	SetConsoleTextAttribute(hStdout, 240);
+	cout << "> " << menu[choise];
+	SetConsoleTextAttribute(hStdout, 07 | FOREGROUND_INTENSITY);
+	cout.flush();
+	while (_getch() != 0x0D) {
+		press = _getch();
+		system("color 0F");
+		switch (press) {
+		case 0x48:
+			destCoord.Y = y;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << menu[choise] << "   ";
+			cout.flush();
+			if (choise == 0) {
+				choise = countEl - 1;
+				y = startY + countEl - 1;
+			}
+			else {
+				choise--;
+				y--;
+			}
+			destCoord.Y = y;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			SetConsoleTextAttribute(hStdout, 240);
+			cout << "> " << menu[choise];
+			SetConsoleTextAttribute(hStdout, 07 | FOREGROUND_INTENSITY);
+			cout.flush();
+			break;
+		case 0x50:
+			destCoord.X = x;
+			destCoord.Y = y;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << menu[choise] << "   ";
+			cout.flush();
+			if (choise == countEl - 1) {
+				choise = 0;
+				y = startY;
+			}
+			else {
+				choise++;
+				y++;
+			}
+			destCoord.X = x;
+			destCoord.Y = y;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			SetConsoleTextAttribute(hStdout, 240);
+			cout << "> " << menu[choise];
+			SetConsoleTextAttribute(hStdout, 07 | FOREGROUND_INTENSITY);
+			cout.flush();
+			break;
+		}
+	}
+	SetConsoleTextAttribute(hStdout, 07);
+	return choise;
+}
+
+void menu() {
+	int choise = 0;
 	int x = 0, y = 0;
 	string menu[9] = { "Создание новой записи о студенте."
 		, "Внесение изменений в уже имеющуюся запись."
 		, "Данных о студентах."
 		, "Информация обо всех студентах группы N.N – инициализируется пользователем."
 		, "Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию."
-		, "Количество студентов мужского и женского пола.                                                           "
+		, "Количество студентов мужского и женского пола."
 		, "Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»"
 		, "Данные о студентах, имеющих номер в списке – k."
 		, "Выход" };
-	while (true) {
-		cout << "Создание новой записи о студенте.\n"
-			<< "Внесение изменений в уже имеющуюся запись.\n"
-			<< "Данных о студентах.\n"
-			<< "Информация обо всех студентах группы N.N – инициализируется пользователем.\n"
-			<< "Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию.\n"
-			<< "Количество студентов мужского и женского пола.\n"
-			<< "Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»;\n"
-			<< "Данные о студентах, имеющих номер в списке – k.\n"
-			<< "Выход\n";
-		while (_getch() != 0x0D) {
-			press = _getch();
-			switch (press) {
-			case 0x48:
-				destCoord.Y = y;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				SetConsoleTextAttribute(hStdout, 07);
-				cout << menu[choise] << "  ";
-				cout.flush();
-				if (choise == 0) {
-					choise = 8;
-					y = 8;
-				}
-				else {
-					choise--;
-					y--;
-				}
-				destCoord.Y = y;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				SetConsoleTextAttribute(hStdout, 240);
-				cout << "> " << menu[choise];
-				cout.flush();
-				break;
-			case 0x50:
-				destCoord.X = x;
-				destCoord.Y = y;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				SetConsoleTextAttribute(hStdout, 07);
-				cout << menu[choise] << "  ";
-				cout.flush();
-				if (choise == 8) {
-					choise = 0;
-					y = 0;
-				}
-				else {
-					choise++;
-					y++;
-				}
-				destCoord.X = x;
-				destCoord.Y = y;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				SetConsoleTextAttribute(hStdout, 240);
-				cout << "> " << menu[choise];
-				cout.flush();
-				break;
-			}
-		}
-		SetConsoleTextAttribute(hStdout, 07);
-
+	while (choise != 8) {
+		choise = choiseMenu(menu, 9);
 		switch (choise) {
 		case 0:
 			break;
@@ -194,24 +212,136 @@ void menu() {
 			break;
 		case 7:
 			break;
-		case 8:
-			return;
-			break;
+
 		}
 	}
 }
 
-Student createNewstudent(string name, char sex, int group, int number, int gradesDifTest[], int gradesSession[]) {
-	struct Student newStudent;
-	newStudent.name = name;
-	newStudent.sex = sex;
-	newStudent.group = group;
-	newStudent.number = number;
-	for (int i = 0; i < 5; i++) {
-		newStudent.gradesDifTest[i] = gradesDifTest[i];
-	}
-	for (int i = 0; i < 3; i++) {
-		newStudent.gradesSession[i] = gradesSession[i];
-	}
-	return newStudent;
+bool addStudent(string fileName, int rows) {
+	fstream file;
+	struct Student newStudent ;
+	int choise = 0;
+	int x = 0, y = 0;
+	string menu[7] = { "Введите ФИО : *ФИО*"
+	, "Выберите пол М/Ж: _"
+	, "Введите номер группы: ____"
+	, "Введите оценки за диф зачёты : _ _ _ _ _"
+	, "Введите оценки за сессию : _ _ _"
+	, "Добавить"
+	, "Выйти" };
+	do{
+		choise = choiseMenu(menu, 7);
+		destCoord.Y = y + choise;
+		switch (choise) {
+		case 0:
+			destCoord.X = 0;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << "Введите ФИО :                                       ";
+			destCoord.X = 14;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			getline(cin, newStudent.name);
+			menu[choise] = "Введите ФИО : " + newStudent.name;
+			destCoord.X = 0;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << menu[choise] << "           ";
+			break;
+		case 1:
+
+			break;
+		case 2:
+			destCoord.X = 1;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			cout << "Введите номер группы: ____";
+			destCoord.X = 23;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			getline(cin, newStudent.group);
+			if (newStudent.group.length() > 4 
+				|| !isdigit(newStudent.group[0]) 
+				|| !isdigit(newStudent.group[1]) 
+				|| !isdigit(newStudent.group[2]) 
+				|| !isdigit(newStudent.group[3])){
+				menu[choise] = "Введите номер группы: ____ Данные не корректны      ";
+			}
+			else {
+				menu[choise] = "Введите номер группы: " + newStudent.group;
+				destCoord.X = 0;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				cout << menu[choise] << "                                           ";
+			}
+			break;
+		case 3:
+
+			break;
+		case 4:
+
+			break;
+		case 5:
+
+			break;
+		}
+
+	} while (choise != 6);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//cout << "Введите ФИО:" << endl;
+	//getline(cin, newStudent.name);
+	//cout << endl;
+
+	//cout << "Выберите пол:" << endl;
+	//string menuGender[2] = { "Мужской" , "Женский" };
+	//choise = choiseMenu(menuGender, 2,0 , 4);
+	//switch (choise) {
+	//case 0:
+	//	newStudent.sex = "М";
+	//	break;
+	//case 1:
+	//	newStudent.sex = "Ж";
+	//	break;
+	//}
+	//cout << endl;
+
+	//cout << "Введите номер группы:" << endl;
+	//cin >> newStudent.group;
+	//cout << endl;
+
+	//bool check = false;
+	//do {
+	//	cout << "Введите оценки за диф зачёты через пробел:" << endl;
+	//	getline(cin, newStudent.gradesDifTest);
+	//	for (int i = 0; i < newStudent.gradesDifTest.length(); i++) {
+	//		if (newStudent.gradesDifTest[i] == '2') {
+	//			cout << "Студент не может быть добавлен в таблицу так как он должен быть отчислен" << endl;
+	//			string menuExpul[2] = { "Изменить данные" , "Выйти" };
+	//			choise = choiseMenu(menuExpul, 2, 0, 14);
+	//			if (choise == 1) {
+	//				choise = -1;
+	//			}
+	//			check = false;
+	//			break;
+	//		}
+	//		else {
+	//			check = true;
+	//		}
+	//	}
+	//	if (choise == -1) {
+	//		return false;
+	//	}
+	//} while (check != true);
+
+	//cout << "Введите оценки за диф зачёты:" << endl;
+	//cin >> newStudent.gradesDifTest;
+
+	return true;
 }
