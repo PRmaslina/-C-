@@ -33,9 +33,9 @@ int main() {
 	setlocale(0, "");
 	int rows;
 	Student* studentsTable = readCSV(rows, "Студенты.csv");
-	addStudent("dfdsf", 3);
+	//addStudent("dfdsf", 3);
 	//printTable(studentsTable, rows);
-	//menu();
+	menu();
 	delete[] studentsTable;
 }
 
@@ -197,6 +197,9 @@ void menu() {
 		choise = choiseMenu(menu, 9);
 		switch (choise) {
 		case 0:
+			system("cls");
+			addStudent("нфы",2);
+			system("cls");
 			break;
 		case 1:
 			break;
@@ -246,16 +249,25 @@ bool addStudent(string fileName, int rows) {
 			cout << menu[choise] << "           ";
 			break;
 		case 1:
-
+			destCoord.X = 20;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			getline(cin, newStudent.sex);
+			if (newStudent.sex.length() != 1 
+				|| (newStudent.sex != "М" && newStudent.sex != "Ж")) {
+				menu[choise] = "Выберите пол М/Ж: _ Данные не корректны      ";
+			}
+			else {
+				menu[choise] = "Выберите пол М/Ж: " + newStudent.sex;
+				destCoord.X = 0;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				cout << menu[choise] << "                                           ";
+			}
 			break;
 		case 2:
-			destCoord.X = 1;
-			SetConsoleCursorPosition(hStdout, destCoord);
-			cout << "Введите номер группы: ____";
-			destCoord.X = 23;
+			destCoord.X = 24;
 			SetConsoleCursorPosition(hStdout, destCoord);
 			getline(cin, newStudent.group);
-			if (newStudent.group.length() > 4 
+			if (newStudent.group.length() != 4 
 				|| !isdigit(newStudent.group[0]) 
 				|| !isdigit(newStudent.group[1]) 
 				|| !isdigit(newStudent.group[2]) 
@@ -270,7 +282,18 @@ bool addStudent(string fileName, int rows) {
 			}
 			break;
 		case 3:
-
+			destCoord.X = 24;
+			SetConsoleCursorPosition(hStdout, destCoord);
+			getline(cin, newStudent.gradesDifTest);
+			if (newStudent.gradesDifTest.length() != 5) {
+				menu[choise] =  "Введите оценки за диф зачёты : _ _ _ _ _ Данные не корректны";
+			}
+			else {
+				menu[choise] = "Введите номер группы: " + newStudent.gradesDifTest;
+				destCoord.X = 0;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				cout << menu[choise] << "                                           ";
+			}
 			break;
 		case 4:
 
