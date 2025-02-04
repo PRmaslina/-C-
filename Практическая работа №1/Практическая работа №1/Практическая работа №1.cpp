@@ -94,6 +94,7 @@ int main()
     cin >> intNumber;
     cout << '\n';
     cellInt(intNumber);
+
     do{
         cout << "Нужно ли изменить какой-нибудь бит? (y/n): ";
         cin >> input;
