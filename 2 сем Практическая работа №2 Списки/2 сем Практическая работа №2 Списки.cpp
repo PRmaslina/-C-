@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <conio.h>
+#include <chrono>
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
@@ -13,33 +14,114 @@ struct List{
 	List* tail;
 };
 
-void menu();
+void menu(List*, int*, int);
 int choiseMenu(string*, int, int, int);
 List* createList(int);
-void swapList(List, List);
+void swapList(List&, List&);
+void fillListAndMas(List*, int*, int);
 
 int main() {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	//menu();
-	int count = 0;
-	List* list = createList(3);
-	int* mas = new int[3];
-	int count = 0;
-	for (List* elem = list; elem->head != 0; elem = elem->head,count++) {
-		elem->data = count;
-	}
-	for (List* elem = list; elem->head != 0; elem = elem->head) {
-		cout << elem->data << endl;
-	}
-	swapList(*list->head, *(*list->head).head);
-	for (List* elem = list; elem->head != 0; elem = elem->head) {
-		cout << elem->data << endl;
-	}
+	int len;
+	cout << "Введите размер массива и списка:" << endl;
+	cin >> len;
+	List* list = createList(len);
+	int* mas = new int[len];
+	fillListAndMas(list, mas, len);
+
+	//swapList(*list->head, *(*list->head).head);
 	//for (List* elem = list; elem->head != 0; elem = elem->head) {
 	//	delete elem;
 	//}
 }
+
+void fillListAndMas(List* list, int* mas, int len) {
+	int choise;
+	int count = 0;
+	system("cls");
+	string menu[2] = { "Случайными числами"
+						, "По порядку" };
+	choise = choiseMenu(menu, 2, 0, 0);
+	switch (choise) {
+	case 0:
+		for (List* elem = list; elem->head; elem = elem->head) {
+			elem->data = rand();
+		}
+		for (int i = 0; i < len; i++) {
+			mas[i] = rand();
+		}
+		break;
+	case 1:
+		count = 0;
+		for (List* elem = list; elem->head; elem = elem->head, count++) {
+			elem->data = count;
+		}
+		count = 0;
+		for (int i = 0; i < len; i++, count++) {
+			mas[i] = count;
+		}
+		break;
+	}
+}
+
+List* remadeList(List* list, int len, int newLen) {
+	system("cls");
+	List* elem = list;
+	for (; elem->head != 0; elem = elem->head) {
+		if (elem->tail) {
+			delete elem->tail;
+		}
+	}
+	delete elem;
+	List* list = createList(newLen);
+	return list;
+}
+
+int* remadeMas(int* mas, int newLen) {
+	system("cls");
+	delete[] mas;
+	int* mas = new int[newLen];
+	return mas;
+}
+
+void insertElemList(List* list, int place, int number) {
+	List* newElem = new List;
+	newElem->data = number;
+	for (List* elem = list, int count = 0; elem->head; elem = elem->head, count++) {
+		if (count == place) {
+			elem->head->tail = newElem;
+			newElem->head = elem->head;
+			elem->head = newElem;
+			newElem->tail = elem;
+			break;
+		}
+	}
+}
+
+void deleteElemList(List* list, int place) {
+	for (List* elem = list, int count = 0; elem->head; elem = elem->head, count++) {
+		if (count == place) {
+			elem->tail->head = elem->head;
+			break;
+		}
+	}
+}
+
+int* insertElemMas(List* list, int* mas, int len, int place, int number) {
+	int* newMas = new int[len+1];
+	for (int i = 0, j = 0; i < len + 1; i++, j++) {
+		newMas[i] = mas[j];
+		if (i == place) {
+			newMas[i] = number;
+			j--;
+		}
+	}
+	delete[] mas;
+	return newMas;
+}
+
 
 List* createList(int len) {
 	List* curr = 0, * next = 0;
@@ -55,17 +137,48 @@ List* createList(int len) {
 	return curr;
 }
 
-void swapList(List el1, List el2) {
+void swapList(List &el1, List &el2) {
 	int el1_data = el1.data;
 	el1.data = el2.data;
 	el2.data = el1_data;
 }
 
-void menu() {
+void menu(List* list, int* mas, int len) {
+	system("cls");
+	cout << "Список: ";
+	for (List* elem = list; elem->head; elem = elem->head) {
+		cout << elem->data << ' ';
+	}
+	cout << "\nДинамический массив: ";
+	for (int i = 0; i < len; i++) {
+		cout << mas[i] << ' ';
+	}
 	int choise = 0;
-	string menu[1] = {"Сформировать двусвязный список и динамический массив размерности N"};
-	while (choise != 8) {
-		choise = choiseMenu(menu, 9, 0, 0);
+	string menu[7] = { "Заполнить заново"
+	, "Пересоздать"
+	, "Вставить новый элемент"
+	, "Удалить элемент"
+	, "Поменять эелементы местами" 
+	, "Получить элемент"
+	, "Выход" };
+	while (choise != 6) {
+		choise = choiseMenu(menu, 7, 0, 0);
+		switch (choise) {
+		case 0:
+			fillListAndMas(list, mas, len);
+			break;
+		case 1:
+			remadeListAndMas(List * list, int* mas, int len);
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		}
 	}
 }
 
