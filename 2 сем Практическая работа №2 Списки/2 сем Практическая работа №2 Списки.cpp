@@ -66,6 +66,42 @@ void fillListAndMas(List* list, int* mas, int len) {
 	}
 }
 
+void fillList(List* list, int choise) {
+	int count;
+	srand(time(0));
+	switch (choise) {
+	case 0:
+		for (List* elem = list; elem->head; elem = elem->head) {
+			elem->data = rand();
+		}
+		break;
+	case 1:
+		count = 0;
+		for (List* elem = list; elem->head; elem = elem->head, count++) {
+			elem->data = count;
+		}
+		break;
+	}
+}
+
+void fillList(int* mas, int len, int choise) {
+	int count;
+	srand(time(0));
+	switch (choise) {
+	case 0:
+		for (int i = 0; i < len; i++) {
+			mas[i] = rand();
+		}
+		break;
+	case 1:
+		count = 0;
+		for (int i = 0; i < len; i++, count++) {
+			mas[i] = count;
+		}
+		break;
+	}
+}
+
 List* remadeList(List* list, int len, int newLen) {
 	system("cls");
 	List* elem = list;
@@ -104,12 +140,14 @@ void deleteElemList(List* list, int place) {
 	for (List* elem = list, int count = 0; elem->head; elem = elem->head, count++) {
 		if (count == place) {
 			elem->tail->head = elem->head;
+			elem->head->tail = elem->tail;
+			delete elem;
 			break;
 		}
 	}
 }
 
-int* insertElemMas(List* list, int* mas, int len, int place, int number) {
+int* insertElemMas(int* mas, int len, int place, int number) {
 	int* newMas = new int[len+1];
 	for (int i = 0, j = 0; i < len + 1; i++, j++) {
 		newMas[i] = mas[j];
@@ -122,6 +160,17 @@ int* insertElemMas(List* list, int* mas, int len, int place, int number) {
 	return newMas;
 }
 
+int* deleteElemMas(int* mas, int len, int place) {
+	int* newMas = new int[len - 1];
+	for (int i = 0, j = 0; i < len - 1; i++, j++) {
+		if (i == place) {
+			j++;
+		}
+		newMas[i] = mas[j];
+	}
+	delete[] mas;
+	return newMas;
+}
 
 List* createList(int len) {
 	List* curr = 0, * next = 0;
@@ -135,12 +184,6 @@ List* createList(int len) {
 	}
 	curr->tail = 0;
 	return curr;
-}
-
-void swapList(List &el1, List &el2) {
-	int el1_data = el1.data;
-	el1.data = el2.data;
-	el2.data = el1_data;
 }
 
 void menu(List* list, int* mas, int len) {
