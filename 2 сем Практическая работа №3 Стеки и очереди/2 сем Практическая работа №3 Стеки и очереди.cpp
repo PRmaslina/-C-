@@ -21,6 +21,16 @@ struct Queue {
 	struct List* head, * tail;
 };
 
+struct ExprElem {
+	string type;
+	int data;
+	int priority;
+};
+	 
+enum Oprators {
+	number, plus, minus
+};
+int solutionUsualNot(string);
 int choiseMenu(string*, int, int, int);
 // сделать функцию замены всех вхождений подстроки в строку
 int main(){
@@ -28,31 +38,118 @@ int main(){
 	bool usualNot, ReversePolNot, DirectPolNot;
 	cout << "Введите выражение (разделяйте числа и операторы пробелами):" << endl;
 	getline(cin, expression);
+	cout << solutionUsualNot(expression);
+	//ExprElem* exprArr = new ExprElem[1];
 	//expression.replace(1, 3,"46");
 }
 // рекурсию для решения обычного выражения
 // стек для обратной польской нотации
-//
-int solutionUsualNot(string expression) {
-	for (int i = 0; expression[i] != '\0'; i++) {
-		// сначала разбить по + и - затем рассматривать выражения
-	}
-}
 
-bool checkUsualNot(string expression) {
+
+
+// сначала разбить по + и - затем рассматривать выражения
+string DoOperator(string expression, int place, char typeOper) {
+	string number1 = "", number2 = "";
+	int leftPlace, rightPlace;
+	for (int j = place - 1, check = 0;; j--) {
+		if (isdigit(expression[j])) {
+			number1 = expression[j] + number1;
+			check = 1;
+		}
+		else if (check && !isdigit(expression[j])) {
+			leftPlace = j+1;
+			break;
+		}
+	}
+
+	for (int j = place + 1, check = 0;; j++) {
+		if (isdigit(expression[j])) {
+			number2 += expression[j];
+			check = 1;
+		}
+		else if (check && !isdigit(expression[j])) {
+			rightPlace = j-1;
+			break;
+		}
+	}
 	
-	for (int i = 0; expression[i] != '\0'; i++) {
-
+	string equals;
+	switch (typeOper) {
+	case '*':
+		equals = to_string(stoi(number1) * stoi(number2));
+		break;
+	case '/':
+		equals = to_string(stoi(number1) / stoi(number2));
+		break;
+	case '+':
+		equals = to_string(stoi(number1) + stoi(number2));
+		break;
+	case '-':
+		equals = to_string(stoi(number1) - stoi(number2));
+		break;
 	}
+	while (equals.length() != rightPlace - leftPlace + 1) {
+		equals += ' ';
+	}
+	expression.replace(leftPlace, equals.length(), equals);
+	return expression;
 }
 
-bool checkReversePolNot(string expression) {
-	// сделать проверку на скобки и дальше на расположение операторов
+int solutionUsualNot(string expression) {
+	string number;
+	for (int i = 0; expression[i] != '\0'; i++) {
+		if (expression[i] == '(') {
+			for (int j = i + 1, check = 1; expression[j] != '\0'; j++) {
+				if (expression[j] == '(') {
+					check++;
+				}
+				else if (expression[j] == ')') {
+					check--;
+					if (!check) {
+						number = to_string(solutionUsualNot(expression.substr(i + 1, j - i - 1)));
+						while (number.length() != j - i + 2) {
+							number += ' ';
+						}
+						expression.replace(i,j-i, number);
+						break;
+					}
+				}
+			}
+		}
+	}
+	for (int i = 0; i < expression.length(); i++) {
+		if (expression[i] == '*') {
+			expression = DoOperator(expression, i, '*');
+		}
+		else if (expression[i] == '/') {
+			expression = DoOperator(expression, i, '/');
+		}
+	}
+	for (int i = 0; i < expression.length(); i++) {
+		if (expression[i] == '+') {
+			expression = DoOperator(expression, i, '+');
+		}
+		else if (expression[i] == '-') {
+			expression = DoOperator(expression, i, '-');
+		}
+	}
+	return stoi(expression);
 }
 
-bool checkDirectPolNot(string expression) {
-
-}
+//bool checkUsualNot(string expression) {
+//	
+//	for (int i = 0; expression[i] != '\0'; i++) {
+//
+//	}
+//}
+//
+//bool checkReversePolNot(string expression) {
+//	// сделать проверку на скобки и дальше на расположение операторов
+//}
+//
+//bool checkDirectPolNot(string expression) {
+//
+//}
 
 int choiseMenu(string* menu, int countEl, int startX, int startY) {
 	int choise = 0;
