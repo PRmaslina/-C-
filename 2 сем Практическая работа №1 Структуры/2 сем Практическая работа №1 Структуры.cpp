@@ -43,6 +43,16 @@ void printInfoSexes(Student*, int);
 void grantStudents(Student*, int);
 void printInfoStudent(Student*, int, int);
 
+
+int main() {
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	int rows;
+	Student* studentsTable = readCSV(rows, "Студенты.CSV");
+	menu(studentsTable, rows);
+	delete[] studentsTable;
+}
+
 int choiseMenu(string* menu, int countEl, int startX, int startY) {
 	int choise = 0;
 	int press = 0;
@@ -114,15 +124,6 @@ int choiseMenu(string* menu, int countEl, int startX, int startY) {
 	return choise;
 }
 
-int main() {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-	int rows;
-	Student* studentsTable = readCSV(rows, "Студенты.CSV");
-	menu(studentsTable, rows);
-	delete[] studentsTable;
-}
-
 Student* readCSV(int& rows, string fileName) {
 	ifstream file;
 	string line;
@@ -174,57 +175,43 @@ void menu(Student* studentsTable, int& rows) {
 		, "Выход" };
 	while (choise != 8) {
 		choise = choiseMenu(menu, 9, 0, 0);
+		system("cls");
 		switch (choise) {
 		case 0: // Создание новой записи о студенте
-			system("cls");
 			studentsTable = addStudent("Студенты.CSV", studentsTable, rows, 0);
-			system("cls");
 			break;
 		case 1: // Внесение изменений в уже имеющуюся запись
-			system("cls");
 			printStudents(studentsTable, rows);
 			cout << "Введите номер студента информацию о котором вы хотите изменить:\n";
 			cin >> inputInt;
 			system("cls");
 			studentsTable = addStudent("Студенты.CSV", studentsTable, rows, inputInt);
-			system("cls");
 			break;
 		case 2: // Данные о студентах
-			system("cls");
 			printStudents(studentsTable, rows);
 			getchar();
-			system("cls");
 			break;
 		case 3: //Информация обо всех студентах группы N
-			system("cls");
 			cout << "Введите номер группы информацию о которой вы хотите вывести:\n";
 			cin >> inputString;
 			system("cls");
 			printInfoGroup(studentsTable, rows, inputString);
 			getchar();
 			getchar();
-			system("cls");
 			break;
 		case 4: // Топ самых успешных студентов с наивысшим по рейтингу средним баллом за прошедшую сессию
-			system("cls");
 			bestStudents(studentsTable, rows);
 			getchar();
-			system("cls");
 			break;
 		case 5: // Количество студентов мужского и женского пола
-			system("cls");
 			printInfoSexes(studentsTable, rows);
 			getchar();
-			system("cls");
 			break;
 		case 6: // Данные о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»
-			system("cls");
 			grantStudents(studentsTable, rows);
 			getchar();
-			system("cls");
 			break;
 		case 7: // Данные о студенте, имеющем номер в списке – k.
-			system("cls");
 			do {
 				cout << "Введите номер нужного студента:" << endl;
 				cin >> inputInt;
@@ -233,10 +220,10 @@ void menu(Student* studentsTable, int& rows) {
 			printInfoStudent(studentsTable, rows , inputInt);
 			getchar();
 			getchar();
-			system("cls");
 			break;
 
 		}
+		system("cls");
 	}
 }
 
