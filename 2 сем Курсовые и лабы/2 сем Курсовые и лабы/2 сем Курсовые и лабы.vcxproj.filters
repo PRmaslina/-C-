@@ -21,9 +21,15 @@
     <ClCompile Include="stacks.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="students.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stacks.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="students.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
