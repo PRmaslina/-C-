@@ -24,12 +24,12 @@
     <ClCompile Include="students.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="lists.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stacks.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="students.h">
+    <ClInclude Include="practWorks.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

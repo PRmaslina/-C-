@@ -34,15 +34,10 @@ struct RbTree {
 void binTreeInsert(BinTree*&, int);
 void printBinTree(BinTree*, int);
 
-template <typename treeType>
-int lefttTreeDepth(treeType* tree, int depth = 0) {
-	depth++;
-	if(tree->left)
-}
+void printTree(BinTree* tree, int posY, int posX) {
 
-void PrintTree(BinTree* tree, int posY, int posX) {
 	if (tree->left){
-		PrintTree(tree->left, posY + 4, posX - 3);
+		printTree(tree->left, posY + 4, posX - 3);
 	}
 	if (tree->p->left == tree) {
 		
@@ -86,7 +81,7 @@ void PrintTree(BinTree* tree, int posY, int posX) {
 	}
 
 	if (tree->right) {
-		PrintTree(tree->right, posY + 4, posX + 3);
+		printTree(tree->right, posY + 4, posX + 3);
 	}
 }
 
@@ -104,7 +99,7 @@ int main(){
 	binTreeInsert(tree, 30);
 	binTreeInsert(tree, 6);
 	binTreeInsert(tree, 8);
-	PrintTree(tree, 0, 10);
+	printTree(tree, 0, 10);
 	getchar();
 }
 
@@ -195,9 +190,6 @@ void printBinTree(BinTree* root, int posY = 0) {
 		cout.flush();
 	}
 }
-
-
-
 
 void avlTreeInsert(AvlTree*& root, int newEl) {
 	if (root) {

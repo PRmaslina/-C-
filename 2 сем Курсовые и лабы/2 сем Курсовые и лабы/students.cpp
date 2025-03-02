@@ -22,10 +22,11 @@ namespace firstPract {
 	};
 
 	struct Guest {
+		string number;
 		string name = "ФИО";
 		string status = "Слушатель";
 		string academicDegree = "Студент";
-		string university = "ЛЭТИ";
+		string university = "СПБГЭТУ \"ЛЭТИ\"";
 		string theme = " - ";
 	};
 
@@ -34,235 +35,161 @@ namespace firstPract {
 		int averageGradeSession;
 	};
 
+	template<typename Structure>
+	Structure* tableRealloc(Structure* table, int oldSize, int newSize) {
+		Structure* newTable = new Structure[newSize];
+		for (int i = 0; i < oldSize && i < newSize; i++) {
+			newTable[i] = table[i];
+		}
+		return newTable;
+	}
+
+	void printStudent(Student student) {
+		cout << setw(5) << student.number << " | " << setw(35) << student.name << " | " << setw(3) << student.sex << " | " << setw(8) << student.group << " | " << setw(10) << student.gradesDifTest << " | " << setw(6) << student.gradesSession << " |" << endl;
+		cout << "------------------------------------------------------------------------------------" << endl;
+	}
+
 	void printStudents(Student* table, int rows) {
 		cout << "------------------------------------------------------------------------------------" << endl;
 		for (int i = 0; i < rows; i++) {
-			cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " | " << setw(10) << table[i].gradesDifTest << " | " << setw(6) << table[i].gradesSession << " |" << endl;
-			cout << "------------------------------------------------------------------------------------" << endl;
+			printStudent(table[i]);
 		}
 	}
 
-	void printGuests(Student* table, int rows) {
-		cout << "------------------------------------------------------------------------------------" << endl;
-		for (int i = 0; i < rows; i++) {
-			cout << setw(5) << table[i].number << " | " << setw(35) << table[i].name << " | " << setw(3) << table[i].sex << " | " << setw(8) << table[i].group << " | " << setw(10) << table[i].gradesDifTest << " | " << setw(6) << table[i].gradesSession << " |" << endl;
-			cout << "------------------------------------------------------------------------------------" << endl;
-		}
-	}
-
-	Student* OLDaddStudent(string fileName, Student* studentsTable, int& rows, int numberStudent) {
+	Student* addStudent(string fileName, Student* studentsTable, Student newStudent, int& rows) {
 		fstream file;
-		struct Student newStudent;
-		int choise = 0;
-		bool check[5] = { false, false, false, false, false };
-		int x = 0, y = 0;
-		bool digitCheck = false;
-		bool gradeCheck = false;
-		string menu[7];
-		if (!numberStudent) {
-			newStudent.number = to_string(rows);
-			menu[0] = "Введите ФИО : *ФИО*";
-			menu[1] = "Выберите пол М/Ж: _";
-			menu[2] = "Введите номер группы: ____";
-			menu[3] = "Введите оценки за диф зачёты : _____";
-			menu[4] = "Введите оценки за сессию : ___";
-			menu[5] = "Добавить     ";
-			menu[6] = "Выйти";
+		file.open(fileName); //std::ios::app
+		if (!file.is_open()) {
+			cout << " файл не открыт ";
 		}
 		else {
-			newStudent = studentsTable[numberStudent];
-			menu[0] = "Введите ФИО : " + newStudent.name;
-			check[0] = true;
-			menu[1] = "Выберите пол М/Ж: " + newStudent.sex;
-			check[1] = true;
-			menu[2] = "Введите номер группы: " + newStudent.group;
-			check[2] = true;
-			menu[3] = "Введите оценки за диф зачёты : " + newStudent.gradesDifTest;
-			check[3] = true;
-			menu[4] = "Введите оценки за сессию : " + newStudent.gradesSession;
-			check[4] = true;
-			menu[5] = "Заменить    ";
-			menu[6] = "Выйти";
-		}
-		do {
-			choise = choiseMenu(menu, 7, 0, 0);
-			destCoord.Y = y + choise;
-			switch (choise) {
-			case 0:
-				destCoord.X = 0;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				cout << "Введите ФИО :                                       ";
-				destCoord.X = 14;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				getline(cin, newStudent.name);
-				menu[choise] = "Введите ФИО : " + newStudent.name;
-				destCoord.X = 0;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				cout << menu[choise] << "           ";
-				check[0] = true;
-				break;
-			case 1:
-				destCoord.X = 20;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				getline(cin, newStudent.sex);
-				if (newStudent.sex != "М" && newStudent.sex != "Ж") {
-					menu[choise] = "Выберите пол М/Ж: _ Данные не корректны      ";
-					check[1] = false;
-				}
-				else {
-					menu[choise] = "Выберите пол М/Ж: " + newStudent.sex;
-					destCoord.X = 0;
-					SetConsoleCursorPosition(hStdout, destCoord);
-					cout << menu[choise] << "                                           ";
-					check[1] = true;
-				}
-				break;
-			case 2:
-				destCoord.X = 24;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				getline(cin, newStudent.group);
-				if (newStudent.group.length() != 4
-					|| !isdigit(newStudent.group[0])
-					|| !isdigit(newStudent.group[1])
-					|| !isdigit(newStudent.group[2])
-					|| !isdigit(newStudent.group[3])) {
-					menu[choise] = "Введите номер группы: ____ Данные не корректны      ";
-					check[2] = false;
-				}
-				else {
-					menu[choise] = "Введите номер группы: " + newStudent.group;
-					destCoord.X = 0;
-					SetConsoleCursorPosition(hStdout, destCoord);
-					cout << menu[choise] << "                                           ";
-					check[2] = true;
-				}
-				break;
-			case 3:
-				destCoord.X = 33;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				getline(cin, newStudent.gradesDifTest);
-				//digitCheck = false;
-				gradeCheck = false;
-				if (newStudent.gradesDifTest.length() != 5 ||
-					!isdigit(newStudent.gradesDifTest[0]) ||
-					!isdigit(newStudent.gradesDifTest[1]) ||
-					!isdigit(newStudent.gradesDifTest[2]) ||
-					!isdigit(newStudent.gradesDifTest[3]) ||
-					!isdigit(newStudent.gradesDifTest[4])) {
-					menu[choise] = "Введите оценки за диф зачёты : _____ Данные не корректны                ";
-					check[3] = false;
-				}
-				else {
-					for (int i = 0; i < 5; i++) {
-						if (int(newStudent.gradesDifTest[i] - '0') < 3) {
-							gradeCheck = false;
-							menu[choise] = "Введите оценки за диф зачёты : _____ Данный студент должен быть отчислен";
-							check[3] = false;
-							break;
-						}
-						else if (int(newStudent.gradesDifTest[i] - '0') > 5) {
-							gradeCheck = false;
-							menu[choise] = "Введите оценки за диф зачёты : _____ Данные не корректны                ";
-							check[3] = false;
-							break;
-						}
-						gradeCheck = true;
-					}
-					if (gradeCheck) {
-						menu[choise] = "Введите оценки за диф зачёты : " + newStudent.gradesDifTest;
-						check[3] = true;
-					}
-				}
-				destCoord.X = 0;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				cout << menu[choise] << "                                           ";
-				break;
-			case 4:
-				destCoord.X = 29;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				getline(cin, newStudent.gradesSession);
-				if (newStudent.gradesSession.length() != 3 ||
-					!isdigit(newStudent.gradesSession[0]) ||
-					!isdigit(newStudent.gradesSession[1]) ||
-					!isdigit(newStudent.gradesSession[2])) {
-					menu[choise] = "Введите оценки за сессию : ___ Данные не корректны                ";
-					check[4] = false;
-				}
-				else {
-					for (int i = 0; i < 3; i++) {
-						if (int(newStudent.gradesSession[i] - '0') < 3) {
-							gradeCheck = false;
-							menu[choise] = "Введите оценки за сессию : ___ Данный студент должен быть отчислен";
-							check[4] = false;
-							break;
-						}
-						else if (int(newStudent.gradesSession[i] - '0') > 5) {
-							gradeCheck = false;
-							menu[choise] = "Введите оценки за сессию : ___ Данные не корректны                ";
-							check[4] = false;
-							break;
-						}
-						gradeCheck = true;
-					}
-					if (gradeCheck) {
-						menu[choise] = "Введите оценки за сессию : " + newStudent.gradesSession;
-						check[4] = true;
-					}
-				}
-				destCoord.X = 0;
-				SetConsoleCursorPosition(hStdout, destCoord);
-				cout << menu[choise] << "                                           ";
-				break;
-			case 5:
-				if (check[0] && check[1] && check[2] && check[3] && check[4]) {
-					file.open(fileName); //std::ios::app
-					if (!file.is_open()) {
-						menu[choise] += "файл не открыт";
-						cout << menu[choise] << "                                           ";
-					}
-					else {
-						if (!numberStudent) {
-							studentsTable[rows] = newStudent;
-							studentsTable = tableRealloc(studentsTable, (1 + rows), (2 + rows));
-							rows++;
-						}
-						else {
-							studentsTable[numberStudent] = newStudent;
-						}
-						for (int line = 0; line <= rows; line++) {
-							file << studentsTable[line].number << ';' << studentsTable[line].name << ';' << studentsTable[line].sex << ';' << studentsTable[line].group << ';' << studentsTable[line].gradesDifTest << ';' << studentsTable[line].gradesSession << endl;
-						}
-					}
-				}
-				break;
+			studentsTable[rows] = newStudent;
+			studentsTable = tableRealloc<Student>(studentsTable, (1 + rows), (2 + rows));
+			rows++;
+			for (int line = 0; line <= rows; line++) {
+				file << studentsTable[line].number << ';' << studentsTable[line].name << ';' << studentsTable[line].sex << ';' << studentsTable[line].group << ';' << studentsTable[line].gradesDifTest << ';' << studentsTable[line].gradesSession << endl;
 			}
-
-		} while (choise != 6);
-		return studentsTable;
+			return studentsTable;
+		}
 	}
 
-	Student* addStudent(string fileName, Student* studentsTable, Student* newStudent, int& rows) {
-
+	Student* replaceStudent(string fileName, Student* studentsTable, Student newStudent, int& rows, int numberStudent) {
+		fstream file;
+		file.open(fileName); //std::ios::app
+		if (!file.is_open()) {
+			cout << " файл не открыт ";
+		}
+		else {
+			studentsTable[numberStudent] = newStudent;
+			for (int line = 0; line <= rows; line++) {
+				file << studentsTable[line].number << ';' << studentsTable[line].name << ';' << studentsTable[line].sex << ';' << studentsTable[line].group << ';' << studentsTable[line].gradesDifTest << ';' << studentsTable[line].gradesSession << endl;
+			}
+			return studentsTable;
+		}
 	}
 
-	Student* replaceStudent(string fileName, Student* studentsTable, Student* newStudent, int& rows, int numberStudent) {
-		
-	}
-
-	bool StudentDataCheck(string*& menu, Student student){
-		struct Student newStudent;
+	bool studentDataCheck(string* menu, Student student){
 		int choise = 0;
 		bool check[5] = { false, false, false, false, false };
-		int x = 0, y = 0;
 		bool digitCheck = false;
 		bool gradeCheck = false;
+		if (student.name != "") {
+			check[0] = true;
+		}
+		else {
+			menu[0] += " Данные не корректны      ";
+		}
 
+		if (student.sex != "М" && student.sex != "Ж") {
+			menu[1] += " Данные не корректны      ";
+			check[1] = false;
+		}
+		else {
+			check[1] = true;
+		}
+
+		if (student.group.length() != 4
+			|| !isdigit(student.group[0])
+			|| !isdigit(student.group[1])
+			|| !isdigit(student.group[2])
+			|| !isdigit(student.group[3])) {
+			menu[2] += " Данные не корректны      ";
+			check[2] = false;
+		}
+		else {
+			check[2] = true;
+		}
+		
+		gradeCheck = false;
+		if (student.gradesDifTest.length() != 5 ||
+			!isdigit(student.gradesDifTest[0]) ||
+			!isdigit(student.gradesDifTest[1]) ||
+			!isdigit(student.gradesDifTest[2]) ||
+			!isdigit(student.gradesDifTest[3]) ||
+			!isdigit(student.gradesDifTest[4])) {
+			menu[3] += " Данные не корректны                ";
+			check[3] = false;
+		}
+		else {
+			for (int i = 0; i < 5; i++) {
+				if (int(student.gradesDifTest[i] - '0') < 3) {
+					gradeCheck = false;
+					menu[3] += " Данный студент должен быть отчислен";
+					check[3] = false;
+					break;
+				}
+				else if (int(student.gradesDifTest[i] - '0') > 5) {
+					gradeCheck = false;
+					menu[3] += " Данные не корректны                ";
+					check[3] = false;
+					break;
+				}
+				gradeCheck = true;
+			}
+			if (gradeCheck) {
+				check[3] = true;
+			}
+		}
+
+		if (student.gradesSession.length() != 3 ||
+			!isdigit(student.gradesSession[0]) ||
+			!isdigit(student.gradesSession[1]) ||
+			!isdigit(student.gradesSession[2])) {
+			menu[4] += " Данные не корректны                ";
+			check[4] = false;
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				if (int(student.gradesSession[i] - '0') < 3) {
+					gradeCheck = false;
+					menu[4] += " Данный студент должен быть отчислен";
+					check[4] = false;
+					break;
+				}
+				else if (int(student.gradesSession[i] - '0') > 5) {
+					gradeCheck = false;
+					menu[4] += " Данные не корректны                ";
+					check[4] = false;
+					break;
+				}
+				gradeCheck = true;
+			}
+			if (gradeCheck) {
+				check[4] = true;
+			}
+		}
+		if (check[0] && check[1] && check[2] && check[3] && check[4]) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	Student CSVtoStructStudent(string line) {
 		Student newStudent;
 		int sepPlaces[6];
-		for (int place = 0, sepNum = 0; place < line.length() + 1; ++place) {
+		for (int place = 0, sepNum = 0; line[place]; ++place) {
 			if (line[place] == ';') {
 				sepPlaces[sepNum] = place;
 				sepNum++;
@@ -277,12 +204,150 @@ namespace firstPract {
 		return newStudent;
 	}
 
+	Guest CSVtoStructGuest(string line) {
+		Guest newGuest;
+		int sepPlaces[6];
+		for (int place = 0, sepNum = 0; line[place]; ++place) {
+			if (line[place] == ';') {
+				sepPlaces[sepNum] = place;
+				sepNum++;
+			}
+		}
+		newGuest.number = line.substr(0, sepPlaces[0]);
+		newGuest.name = line.substr(sepPlaces[0] + 1, sepPlaces[1] - sepPlaces[0] - 1);
+		newGuest.status = line.substr(sepPlaces[1] + 1, sepPlaces[2] - sepPlaces[1] - 1);
+		newGuest.academicDegree = line.substr(sepPlaces[2] + 1, sepPlaces[3] - sepPlaces[2] - 1);
+		newGuest.university = line.substr(sepPlaces[3] + 1, sepPlaces[4] - sepPlaces[3] - 1);
+		newGuest.theme = line.substr(sepPlaces[4] + 1, sepPlaces[5] - sepPlaces[4] - 1);
+		return newGuest;
+	}
+
+	Guest* addGuest(string fileName, Guest* guestTable, Guest newGuest, int& rows) {
+		fstream file;
+		file.open(fileName);
+		if (!file.is_open()) {
+			cout << " файл не открыт ";
+		}
+		else {
+			guestTable[rows] = newGuest;
+			guestTable = tableRealloc<Guest>(guestTable, (1 + rows), (2 + rows));
+			rows++;
+			for (int line = 0; line <= rows; line++) {
+				file << guestTable[line].number << ';' << guestTable[line].name << ';' << guestTable[line].status << ';' << guestTable[line].academicDegree << ';' << guestTable[line].university << ';' << guestTable[line].theme << endl;
+			}
+			return guestTable;
+		}
+	}
+
+	Guest* replaceGuest(string fileName, Guest* guestTable, Guest newGuest, int& rows, int numberStudent) {
+		fstream file;
+		file.open(fileName);
+		if (!file.is_open()) {
+			cout << " файл не открыт ";
+		}
+		else {
+			guestTable[numberStudent] = newGuest;
+			for (int line = 0; line <= rows; line++) {
+				file << guestTable[line].number << ';' << guestTable[line].name << ';' << guestTable[line].status << ';' << guestTable[line].academicDegree << ';' << guestTable[line].university << ';' << guestTable[line].theme << endl;
+			}
+			return guestTable;
+		}
+	}
+
+	void printGuest(Guest guest) {
+		cout << setw(5) << guest.number << " | " << setw(35) << guest.name << " | " << setw(13) << guest.status << " | " << setw(30) << guest.academicDegree << " | " << setw(25) << guest.university << " | " << setw(35) << guest.theme << " |" << endl;
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+	}
+
+	void printInfoGuests(Guest* table, int rows) {
+		cout << "Выступающие:" << endl;
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+		for (int i = 0; i < rows; i++) {
+			if (table[i].status == "Выступающий") {
+				printGuest(table[i]);
+			}
+		}
+		cout << endl << "Приглашенные:" << endl;
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+		for (int i = 0; i < rows; i++) {
+			if (table[i].university != "ЛЭТИ") {
+				printGuest(table[i]);
+			}
+		}
+		cout << endl << "Выступающие студенты:" << endl;
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+		for (int i = 0; i < rows; i++) {
+			if (table[i].status == "Выступающий" && table[i].academicDegree == "Студент") {
+				printGuest(table[i]);
+			}
+		}
+		cout << endl << "Студенты ЛЭТИ:" << endl;
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+		for (int i = 0; i < rows; i++) {
+			if (table[i].university == "СПБГЭТУ \"ЛЭТИ\"" && table[i].academicDegree == "Студент") {
+				printGuest(table[i]);
+			}
+		}
+	}
+
+	void printGuests(Guest* table, int rows) {
+		cout << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+		for (int i = 0; i < rows; i++) {
+			printGuest(table[i]);
+		}
+	}
+
+	bool guestDataCheck(string* menu, Guest guest){
+		int choise = 0;
+		bool check[5] = { false, false, false, false, false };
+		if (guest.name.length() > 2) {
+			check[0] = true;
+		}
+		else {
+			menu[0] += " Данные не корректны      ";
+		}
+
+		if (guest.status != "Выступающий" && guest.status != "Слушатель") {
+			menu[1] += " Данные не корректны      ";
+		}
+		else {
+			check[1] = true;
+		}
+
+		if (guest.academicDegree.length() < 2) {
+			menu[2] += " Данные не корректны      ";
+		}
+		else {
+			check[2] = true;
+		}
+
+		if (guest.university.length() < 1) {
+			menu[3] += " Данные не корректны                ";
+		}
+		else {
+			check[3] = true;
+		}
+
+		if ((guest.status == "Слушатель" && guest.theme[0] != '-') || (guest.status == "Выступающий" && guest.theme[0] == '-')) {
+			menu[4] += " Данные не корректны                ";
+		}
+		else {
+			check[4] = true;
+		}
+
+		if (check[0] && check[1] && check[2] && check[3] && check[4]) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	void printInfoGroup(Student* studentsTable, int rows, string group) {
 		cout << "------------------------------------------------------------------------------------" << endl;
 		for (int i = 0; i < rows; i++) {
 			if (studentsTable[i].group == group) {
-				cout << setw(5) << studentsTable[i].number << " | " << setw(35) << studentsTable[i].name << " | " << setw(3) << studentsTable[i].sex << " | " << setw(8) << studentsTable[i].group << " | " << setw(10) << studentsTable[i].gradesDifTest << " | " << setw(6) << studentsTable[i].gradesSession << " |" << endl;
-				cout << "------------------------------------------------------------------------------------" << endl;
+				printStudent(studentsTable[i]);
 			}
 		}
 	}
@@ -327,8 +392,7 @@ namespace firstPract {
 		cout << "------------------------------------------------------------------------------------" << endl;
 		for (int i = 0; i < rows; i++) {
 			if (studentsTable[i].gradesDifTest[0] + studentsTable[i].gradesDifTest[1] + studentsTable[i].gradesDifTest[2] + studentsTable[i].gradesDifTest[3] + studentsTable[i].gradesDifTest[4] + studentsTable[i].gradesSession[0] + studentsTable[i].gradesSession[1] + studentsTable[i].gradesSession[2] == '5' * 8) {
-				cout << setw(5) << studentsTable[i].number << " | " << setw(35) << studentsTable[i].name << " | " << setw(3) << studentsTable[i].sex << " | " << setw(8) << studentsTable[i].group << " | " << setw(10) << studentsTable[i].gradesDifTest << " | " << setw(6) << studentsTable[i].gradesSession << " |" << endl;
-				cout << "------------------------------------------------------------------------------------" << endl;
+				printStudent(studentsTable[i]);
 			}
 		}
 		cout << endl << "Данные о студентах обучающихся только на на «хорошо» и «отлично»" << endl;
@@ -348,8 +412,7 @@ namespace firstPract {
 				}
 			}
 			if (checkGrades && !(studentsTable[i].gradesDifTest[0] + studentsTable[i].gradesDifTest[1] + studentsTable[i].gradesDifTest[2] + studentsTable[i].gradesDifTest[3] + studentsTable[i].gradesDifTest[4] + studentsTable[i].gradesSession[0] + studentsTable[i].gradesSession[1] + studentsTable[i].gradesSession[2] == '5' * 8)) {
-				cout << setw(5) << studentsTable[i].number << " | " << setw(35) << studentsTable[i].name << " | " << setw(3) << studentsTable[i].sex << " | " << setw(8) << studentsTable[i].group << " | " << setw(10) << studentsTable[i].gradesDifTest << " | " << setw(6) << studentsTable[i].gradesSession << " |" << endl;
-				cout << "------------------------------------------------------------------------------------" << endl;
+				printStudent(studentsTable[i]);
 			}
 		}
 		cout << endl << "Данные о студентах которые не получают стипендию" << endl;
@@ -369,8 +432,7 @@ namespace firstPract {
 				}
 			}
 			if (checkGrades) {
-				cout << setw(5) << studentsTable[i].number << " | " << setw(35) << studentsTable[i].name << " | " << setw(3) << studentsTable[i].sex << " | " << setw(8) << studentsTable[i].group << " | " << setw(10) << studentsTable[i].gradesDifTest << " | " << setw(6) << studentsTable[i].gradesSession << " |" << endl;
-				cout << "------------------------------------------------------------------------------------" << endl;
+				printStudent(studentsTable[i]);
 			}
 		}
 	}
@@ -383,24 +445,10 @@ namespace firstPract {
 		cout << "Оценки за сессию : " << studentsTable[numberStudent].gradesSession << endl;
 	}
 
-	Student* tableRealloc(Student* table, int oldSize, int newSize) {
-		Student* newTable = new Student[newSize];
-		for (int i = 0; i < oldSize && i < newSize; i++) {
-			newTable[i].number = table[i].number;
-			newTable[i].name = table[i].name;
-			newTable[i].sex = table[i].sex;
-			newTable[i].group = table[i].group;
-			newTable[i].gradesDifTest = table[i].gradesDifTest;
-			newTable[i].gradesSession = table[i].gradesSession;
-		}
-		delete[] table;
-		return newTable;
-	}
-
-	Student* readCSV(int& rows, string fileName) {
+	Student* readStudentsCSV(int& rows, string fileName) {
 		ifstream file;
 		string line;
-		Student* table = new Student[1];
+		Student* table = new Student;
 		file.open(fileName);
 		if (!file.is_open()) {
 			cout << "Файл не открыт\n";
@@ -410,10 +458,31 @@ namespace firstPract {
 			while (getline(file, line)) {
 				line += ';';
 				table[rows] = CSVtoStructStudent(line);
-				table = tableRealloc(table, (1 + rows), (2 + rows));
+				table = tableRealloc<Student>(table, (1 + rows), (2 + rows));
 				rows++;
 			}
 		}
 		return table;
 	}
+
+	Guest* readGuestsCSV(int& rows, string fileName) {
+		ifstream file;
+		string line;
+		Guest* table = new Guest;
+		file.open(fileName);
+		if (!file.is_open()) {
+			cout << "Файл не открыт\n";
+		}
+		else {
+			rows = 0;
+			while (getline(file, line)) {
+				line += ';';
+				table[rows] = CSVtoStructGuest(line);
+				table = tableRealloc<Guest>(table, (1 + rows), (2 + rows));
+				rows++;
+			}
+		}
+		return table;
+	}
+
 }

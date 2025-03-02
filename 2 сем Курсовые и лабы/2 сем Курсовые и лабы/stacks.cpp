@@ -281,7 +281,7 @@ namespace thirdPract {
 			if (isdigit(expression[i]) || (isdigit(expression[i + 1]) && expression[i] == '-')) {
 				strNumber += expression[i];
 			}
-			else if (isdigit(expression[i]) && !isdigit(expression[i - 1])) {
+			else if (!isdigit(expression[i]) && isdigit(expression[i + 1])) {
 				strNumber += expression[i];
 				cout << "Читаем значение " << strNumber << ". Это - число. Переносим в стек" << endl;
 				addToStack(stack, stoi(strNumber));
