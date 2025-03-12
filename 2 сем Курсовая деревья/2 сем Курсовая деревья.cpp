@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <iomanip>
 #include <conio.h>
-
+#include <queue>
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
@@ -34,59 +34,75 @@ struct RbTree {
 void binTreeInsert(BinTree*&, int);
 void printBinTree(BinTree*, int);
 
-template <typename treeType>
-int lefttTreeDepth(treeType* tree, int depth = 0) {
-	depth++;
-	if(tree->left)
-}
 
-void PrintTree(BinTree* tree, int posY, int posX) {
-	if (tree->left){
-		PrintTree(tree->left, posY + 4, posX - 3);
-	}
-	if (tree->p->left == tree) {
-		
-	}
-	else {
-		
-	}
-	destCoord.Y = posY;
-	destCoord.X = posX;
-	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << tree->data;
-	cout.flush();
+//void printTree(BinTree* tree, int posY, int posX) {
+//	if (tree->left){
+//		printTree(tree->left, posY + 4, posX - 3);
+//	}
+//	if (tree->p->left == tree) {
+//		
+//	}
+//	else {
+//		
+//	}
+//	destCoord.Y = posY;
+//	destCoord.X = posX;
+//	SetConsoleCursorPosition(hStdout, destCoord);
+//	cout << tree->data;
+//	cout.flush();
+//
+//	if (tree->p){
+//		destCoord.Y = posY - 1;
+//		destCoord.X = posX;
+//		SetConsoleCursorPosition(hStdout, destCoord);
+//		cout << 'V';
+//		cout.flush();
+//
+//		destCoord.Y = posY - 2;
+//		destCoord.X = posX;
+//		SetConsoleCursorPosition(hStdout, destCoord);
+//		cout << '|';
+//		cout.flush();
+//
+//		destCoord.Y = posY - 3;
+//		destCoord.X = posX - 1;
+//		SetConsoleCursorPosition(hStdout, destCoord);
+//		if (tree->p->left == tree) {
+//			destCoord.X = posX + 1;
+//			SetConsoleCursorPosition(hStdout, destCoord);
+//			cout << '/';
+//		}
+//		else {
+//			destCoord.X = posX - 1;
+//			SetConsoleCursorPosition(hStdout, destCoord);
+//			cout << '\\';
+//		}
+//		cout.flush();
+//	}
+//
+//	if (tree->right) {
+//		printTree(tree->right, posY + 4, posX + 3);
+//	}
+//}
 
-	if (tree->p){
-		destCoord.Y = posY - 1;
-		destCoord.X = posX;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << 'V';
-		cout.flush();
-
-		destCoord.Y = posY - 2;
-		destCoord.X = posX;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << '|';
-		cout.flush();
-
-		destCoord.Y = posY - 3;
-		destCoord.X = posX - 1;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		if (tree->p->left == tree) {
-			destCoord.X = posX + 1;
-			SetConsoleCursorPosition(hStdout, destCoord);
-			cout << '/';
+void print_Tree(BinTree* tree, int level)
+{
+	if (tree)
+	{
+		print_Tree(tree->left, level + 1);
+		for (int i = 0; i < level; i++) cout << "    ";
+		if(tree->p){
+			if (tree->p->left == tree) {
+				cout << ".-->" << tree->data << endl;
+			}
+			else {
+				cout << "'-->" << tree->data << endl;
+			}
 		}
 		else {
-			destCoord.X = posX - 1;
-			SetConsoleCursorPosition(hStdout, destCoord);
-			cout << '\\';
+			cout << tree->data << endl;
 		}
-		cout.flush();
-	}
-
-	if (tree->right) {
-		PrintTree(tree->right, posY + 4, posX + 3);
+		print_Tree(tree->right, level + 1);
 	}
 }
 
@@ -104,7 +120,7 @@ int main(){
 	binTreeInsert(tree, 30);
 	binTreeInsert(tree, 6);
 	binTreeInsert(tree, 8);
-	PrintTree(tree, 0, 10);
+	print_Tree(tree, 0);
 	getchar();
 }
 
