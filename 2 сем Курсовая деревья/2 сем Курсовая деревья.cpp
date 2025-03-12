@@ -17,7 +17,7 @@ struct BinTree {
 
 struct AvlTree {
 	int data;
-	int weight;
+	int weight = 0;
 	AvlTree* p;
 	AvlTree* left;
 	AvlTree* right;
@@ -25,215 +25,158 @@ struct AvlTree {
 
 struct RbTree {
 	int data;
-	char colour;
-	RbTree* p;
-	RbTree* left;
-	RbTree* right;
+	char colour = 'b';
+	RbTree* p = NULL;
+	RbTree* left = NULL;
+	RbTree* right = NULL;
 };
 
-void binTreeInsert(BinTree*&, int);
-void printBinTree(BinTree*, int);
-
-
-//void printTree(BinTree* tree, int posY, int posX) {
-//	if (tree->left){
-//		printTree(tree->left, posY + 4, posX - 3);
-//	}
-//	if (tree->p->left == tree) {
-//		
-//	}
-//	else {
-//		
-//	}
-//	destCoord.Y = posY;
-//	destCoord.X = posX;
-//	SetConsoleCursorPosition(hStdout, destCoord);
-//	cout << tree->data;
-//	cout.flush();
-//
-//	if (tree->p){
-//		destCoord.Y = posY - 1;
-//		destCoord.X = posX;
-//		SetConsoleCursorPosition(hStdout, destCoord);
-//		cout << 'V';
-//		cout.flush();
-//
-//		destCoord.Y = posY - 2;
-//		destCoord.X = posX;
-//		SetConsoleCursorPosition(hStdout, destCoord);
-//		cout << '|';
-//		cout.flush();
-//
-//		destCoord.Y = posY - 3;
-//		destCoord.X = posX - 1;
-//		SetConsoleCursorPosition(hStdout, destCoord);
-//		if (tree->p->left == tree) {
-//			destCoord.X = posX + 1;
-//			SetConsoleCursorPosition(hStdout, destCoord);
-//			cout << '/';
-//		}
-//		else {
-//			destCoord.X = posX - 1;
-//			SetConsoleCursorPosition(hStdout, destCoord);
-//			cout << '\\';
-//		}
-//		cout.flush();
-//	}
-//
-//	if (tree->right) {
-//		printTree(tree->right, posY + 4, posX + 3);
-//	}
-//}
-
-void print_Tree(BinTree* tree, int level)
-{
-	if (tree)
-	{
-		print_Tree(tree->left, level + 1);
-		for (int i = 0; i < level; i++) cout << "    ";
-		if(tree->p){
-			if (tree->p->left == tree) {
-				cout << ".-->" << tree->data << endl;
-			}
-			else {
-				cout << "'-->" << tree->data << endl;
-			}
+template<typename TreeType>
+void leftRotate(TreeType*& root) {
+	TreeType* y = root->right;
+	if (root->p) {
+		if (root->p->left == root){
+			(root->p->left) = (root->right);
 		}
 		else {
-			cout << tree->data << endl;
+			root->p->right = root->right;
 		}
-		print_Tree(tree->right, level + 1);
 	}
+	y->p = root->p;
+	root->p = root->right;
+	if (root->right->left) {
+		root->right->left->p = root;
+	}
+	root->right = y->left;
+	y->left = root;
+	root = y;
 }
 
-int main(){
-	BinTree* tree = NULL;
-	binTreeInsert(tree, 1);
-	binTreeInsert(tree, 4);
-	binTreeInsert(tree, -8);
-	binTreeInsert(tree, 2);
-	binTreeInsert(tree, 3);
-	binTreeInsert(tree, -10);
-	binTreeInsert(tree, -9);
-	binTreeInsert(tree, 7);
-	binTreeInsert(tree, 5);
-	binTreeInsert(tree, 30);
-	binTreeInsert(tree, 6);
-	binTreeInsert(tree, 8);
-	print_Tree(tree, 0);
-	getchar();
+template<typename TreeType>
+void rightRotate(TreeType*& root) {
+	TreeType* y = root->left;
+	if (root->p) {
+		if (root->p->left == root) {
+			(root->p->left) = (root->left);
+		}
+		else {
+			root->p->right = root->left;
+		}
+	}
+	y->p = root->p;
+	root->p = root->left;
+	if (root->left->right) {
+		root->left->right->p = root;
+	}
+	root->left = y->right;
+	y->right = root;
+	root = y;
 }
 
-void binTreeInsert(BinTree*& root, int newEl) {
+
+void balanceRbTree() {
+	
+}
+
+void balanceAvlTree() {
+
+}
+
+void fillRbTree() {
+
+}
+
+template<typename TreeType>
+void treeInsert(TreeType*& root, int newEl) {
 	if (root) {
 		if (root->data > newEl) {
 			if (root->left) {
-				binTreeInsert(root->left, newEl);
+				treeInsert(root->left, newEl);
 			}
 			else {
-				root->left = new BinTree;
+				root->left = new TreeType;
 				root->left->data = newEl;
 				root->left->p = root;
 			}
 		}
 		else {
 			if (root->right) {
-				binTreeInsert(root->right, newEl);
+				treeInsert(root->right, newEl);
 			}
 			else {
-				root->right = new BinTree;
+				root->right = new TreeType;
 				root->right->data = newEl;
 				root->right->p = root;
 			}
 		}
 	}
 	else {
-		root = new BinTree;
+		root = new TreeType;
 		root->data = newEl;
 	}
 }
 
-void printBinTree(BinTree* root, int posY = 0) {
-	int left = 0, right = 0;
-	int posX = 5;
-	if (root->left) {
-		for (BinTree* curr = root->left; curr->left; curr = curr->left) {
-			left++;
-		}
-	}
-	posX = left * 5;
-	destCoord.Y = posY;
-	destCoord.X = posX;
-	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << root->data;
-	cout.flush();
-	if (root->left){
-		destCoord.X = posX - 2;
-		destCoord.Y = posY + 1;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << '|';
-		destCoord.X = posX - 2;
-		destCoord.Y = posY + 2;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << '|';
-		destCoord.X = posX - 2;
-		destCoord.Y = posY + 3;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << 'V';
-		destCoord.X = posX - 2;
-		destCoord.Y = posY + 4;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		getchar();
-		printBinTree(root->left, posY + 4);
-		cout.flush();
-	}
-	if (root->right) {
-		for (BinTree* curr = root->right; curr->right; curr = curr->right) {
-			right++;
-		}
-		destCoord.X = posX + 2;
-		destCoord.Y = posY + 1;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << '|';
-		destCoord.X = posX + 2;
-		destCoord.Y = posY + 2;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << '|';
-		destCoord.X = posX + 2;
-		destCoord.Y = posY + 3;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		cout << 'V';
-		destCoord.X = posX + 2;
-		destCoord.Y = posY + 4;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		getchar();
-		printBinTree(root->right, posY+4);
-		cout.flush();
-	}
-}
-
-
-
-
-void avlTreeInsert(AvlTree*& root, int newEl) {
+template<typename TreeType>
+int numberOfNodes(TreeType* root, int number) {
 	if (root) {
-
+		if(root->left){
+			number += 1 + numberOfNodes<TreeType>(root->left, 0);
+		}
+		if (root->right) {
+			number += 1 + numberOfNodes<TreeType>(root->right, 0);
+		}
+		return number;
 	}
 	else {
-		root = new AvlTree;
-		root->data = newEl;
+		return number;
 	}
 }
 
-void rbTreeInsert(RbTree*& root, int newEl) {
-	if (root) {
-
-	}
-	else {
-		root = new RbTree;
-		root->data = newEl;
+void printBinTree(BinTree* root, int level){
+	if (root)
+	{
+		printBinTree(root->right, level + 1);
+		for (int i = 0; i < level; i++) cout << "    ";
+		if(root->p){
+			if (root->p->left == root) {
+				cout << "`-->" << root->data << endl;
+			}
+			else {
+				cout << ".-->" << root->data << endl;
+			}
+		}
+		else {
+			cout << root->data << endl;
+		}
+		printBinTree(root->left, level + 1);
 	}
 }
+
+
+int main(){
+	BinTree* root = NULL;
+	treeInsert<BinTree>(root, 1);
+	treeInsert<BinTree>(root, 4);
+	treeInsert<BinTree>(root, -8);
+	treeInsert<BinTree>(root, 2);
+	treeInsert<BinTree>(root, 3);
+	treeInsert<BinTree>(root, -10);
+	treeInsert<BinTree>(root, -9);
+	treeInsert<BinTree>(root, 7);
+	treeInsert<BinTree>(root, 5);
+	treeInsert<BinTree>(root, 30);
+	treeInsert<BinTree>(root, 6);
+	treeInsert<BinTree>(root, 8);
+	treeInsert<BinTree>(root, 0);
+	printBinTree(root, 0);
+	BinTree* a = root->left;
+	rightRotate<BinTree>(root);
+	system("cls");
+	printBinTree(root, 0);
+	//cout << numberOfNodes(root, 1);  количество узлов
+	getchar();
+}
+
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
 // Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
