@@ -116,6 +116,90 @@ void treeInsert(TreeType*& root, int newEl) {
 	}
 }
 
+void insertBalanceRb(RbTree*& root, RbTree*& newNode) {
+	RbTree* y;
+	while (newNode->p->colour == 'r') {
+		if (newNode->p == newNode->p->p->left) {
+			y = newNode->p->p->right;
+			if (y && y->colour == 'r') {
+				newNode->p->colour = 'b';
+				y->colour = 'b';
+				newNode->p->p->colour = 'r';
+				newNode = newNode->p->p;
+			}
+			else if (newNode == newNode->p->right) {
+				newNode = newNode->p;
+				leftRotate<RbTree>(newNode);
+				newNode->p->colour = 'b';
+				newNode->p->p->colour = 'r';
+				rightRotate<RbTree>(newNode->p->p);
+			}
+			else {
+				root->colour = 'b';
+				return;
+			}
+		}
+		else {
+			y = newNode->p->p->left;
+			if (y && y->colour == 'r') {
+				newNode->p->colour = 'b';
+				y->colour = 'b';
+				newNode->p->p->colour = 'r';
+				newNode = newNode->p->p;
+			}
+			else if (newNode == newNode->p->left) {
+				newNode = newNode->p;
+				leftRotate<RbTree>(newNode);
+				newNode->p->colour = 'b';
+				newNode->p->p->colour = 'r';
+				rightRotate<RbTree>(newNode->p->p);
+			}
+			else {
+				root->colour = 'b';
+				return;
+			}
+		}
+		if (!newNode->p) {
+			break;
+		}
+	}
+	while (root->p != NULL) {
+		root = root->p;
+	}
+	root->colour = 'b';
+}
+
+void rbTreeInsert(RbTree*& root, int newEl) {
+	RbTree* y = NULL, * x = root;
+	RbTree* newNode = new RbTree;
+	newNode->data = newEl;
+	while (x) {
+		y = x;
+		if (newEl < x->data) {
+			x = x->left;
+		}
+		else {
+			x = x->right;
+		}
+	}
+	newNode->p = y;
+	if (!y) {
+		root = newNode;
+		return;
+	}
+	else if (newEl < y->data) {
+		y->left = newNode;
+	}
+	else{
+		y->right = newNode;
+	}
+	newNode->left = NULL;
+	newNode->right = NULL;
+	newNode->colour = 'r';
+	insertBalanceRb(root, newNode);
+	
+}
+
 template<typename TreeType>
 int numberOfNodes(TreeType* root, int number) {
 	if (root) {
@@ -152,27 +236,70 @@ void printBinTree(BinTree* root, int level){
 	}
 }
 
+void printRbTree(RbTree* root, int level) {
+	if (root)
+	{
+		printRbTree(root->right, level + 1);
+		for (int i = 0; i < level; i++) cout << "    ";
+		SetConsoleTextAttribute(hStdout, root->colour == 'r' ? FOREGROUND_RED : FOREGROUND_GREEN);
+		if (root->p) {
+			if (root->p->left == root) {
+				cout << "`-->" << root->data << endl;
+			}
+			else {
+				cout << ".-->" << root->data << endl;
+			}
+		}
+		else {
+			cout << root->data << endl;
+		}
+		SetConsoleTextAttribute(hStdout, root->colour == 'r' ? FOREGROUND_RED : FOREGROUND_GREEN);
+		printRbTree(root->left, level + 1);
+	}
+}
 
 int main(){
-	BinTree* root = NULL;
-	treeInsert<BinTree>(root, 1);
-	treeInsert<BinTree>(root, 4);
-	treeInsert<BinTree>(root, -8);
-	treeInsert<BinTree>(root, 2);
-	treeInsert<BinTree>(root, 3);
-	treeInsert<BinTree>(root, -10);
-	treeInsert<BinTree>(root, -9);
-	treeInsert<BinTree>(root, 7);
-	treeInsert<BinTree>(root, 5);
-	treeInsert<BinTree>(root, 30);
-	treeInsert<BinTree>(root, 6);
-	treeInsert<BinTree>(root, 8);
-	treeInsert<BinTree>(root, 0);
-	printBinTree(root, 0);
-	BinTree* a = root->left;
-	rightRotate<BinTree>(root);
+	RbTree* root = NULL;
+	rbTreeInsert(root, 1);
+	printRbTree(root, 0);
 	system("cls");
-	printBinTree(root, 0);
+	rbTreeInsert(root, 4);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, -8);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 2);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 3);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, -10);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, -9);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 7);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 5);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 30);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 6);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 8);
+	printRbTree(root, 0);
+	system("cls");
+	rbTreeInsert(root, 0);
+	printRbTree(root, 0);
+	system("cls");
+	printRbTree(root, 0);
 	//cout << numberOfNodes(root, 1);  количество узлов
 	getchar();
 }
