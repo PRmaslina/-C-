@@ -3,25 +3,11 @@
 #include <windows.h>
 #include <iomanip>
 #include <conio.h>
-#include <queue>
+#include <chrono>
+#include <fstream>
 using namespace std;
 HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD destCoord;
-
-struct BinTree {
-	int data = NULL;
-	BinTree* p = NULL;
-	BinTree* left = NULL;
-	BinTree* right = NULL;
-};
-
-struct AvlTree {
-	int data;
-	int weight = 0;
-	AvlTree* p;
-	AvlTree* left;
-	AvlTree* right;
-};
 
 struct RbTree {
 	int data;
@@ -74,15 +60,6 @@ void rightRotate(TreeType* root) {
 	y->right = root;
 }
 
-
-void balanceRbTree() {
-	
-}
-
-void balanceAvlTree() {
-
-}
-
 template<typename TreeType>
 int numberOfNodes(TreeType* root, int number) {
 	if (root) {
@@ -108,18 +85,23 @@ TreeType* minNodeTree(TreeType* root) {
 }
 
 template<typename TreeType>
-TreeType* findNubmerTree(TreeType* root, int number) {
+TreeType* findNubmerTree(TreeType* root, int number, string& log) {
+	log += " --> ищём число ";
 	if (!root) {
+		log += " --> такого числа нет";
 		return NULL;
 	}
 	else if(root->data == number){
+		log += " --> число найдено, возвращаем значение";
 		return root;
 	}
 	else if (root->data < number) {
-		return findNubmerTree<TreeType>(root->right, number);
+		log += " --> идем направо ";
+		return findNubmerTree<TreeType>(root->right, number, log);
 	}
 	else {
-		return findNubmerTree<TreeType>(root->left, number);
+		log += " --> идем налево ";
+		return findNubmerTree<TreeType>(root->left, number, log);
 	}
 }
 
@@ -139,9 +121,11 @@ void transplantNode(TreeType*& root, TreeType*& node1, TreeType*& node2) {
 	}
 }
 
-void deleteBalanceRb(RbTree*& root, RbTree* node) {
+void deleteBalanceRb(RbTree*& root, RbTree* node, string& log) {
 	RbTree* w;
+	log += " --> проверям дерево на дисбаланс";
 	while (node && node != root && node->color == 'b') {
+		log += " --> деревно не сбалансиравано, выполняем балансировку";
 		if (node == node->p->left) {
 			w = node->p->right;
 			if (w->color == 'r') {
@@ -192,42 +176,51 @@ void deleteBalanceRb(RbTree*& root, RbTree* node) {
 		}
 	}
 	if (node){
+		log += " --> устанавливаем цвет корня - черным";
 		node->color = 'b';
 	}
+	log += " --> дерево сбалансировано";
 }
 
-void deleteNodeRb(RbTree*& root, RbTree* node) {
-	RbTree* y = node, * x;
-	char origColor = y->color;
-	if (!node->left) {
-		x = node->right;
-		transplantNode<RbTree>(root, node, node->right);
-	}
-	else if (!node->right) {
-		x = node->left;
-		transplantNode<RbTree>(root, node, node->left);
-	}
-	else {
-		y = minNodeTree<RbTree>(node->right);
-		origColor = y->color;
-		x = y->right;
-		if (y->p == node) {
-			x->p = y;
+int deleteNodeRb(RbTree*& root, RbTree* node, string& log) {
+	auto timeStart = chrono::steady_clock::now();
+	if (node) {
+		RbTree* y = node, * x;
+		char origColor = y->color;
+		log += " --> наиболее подходящим узлом";
+		if (!node->left) {
+			x = node->right;
+			transplantNode<RbTree>(root, node, node->right);
+		}
+		else if (!node->right) {
+			x = node->left;
+			transplantNode<RbTree>(root, node, node->left);
 		}
 		else {
-			transplantNode<RbTree>(root, y, y->right);
-			y->right = node->right;
-			y->right->p = y;
+			y = minNodeTree<RbTree>(node->right);
+			origColor = y->color;
+			x = y->right;
+			if (y->p == node) {
+				x->p = y;
+			}
+			else {
+				transplantNode<RbTree>(root, y, y->right);
+				y->right = node->right;
+				y->right->p = y;
+			}
+			transplantNode<RbTree>(root, node, y);
+			y->left = node->left;
+			y->left->p = y;
+			y->color = node->color;
 		}
-		transplantNode<RbTree>(root, node, y);
-		y->left = node->left;
-		y->left->p = y;
-		y->color = node->color;
+		if (origColor == 'b') {
+			deleteBalanceRb(root, x, log);
+		}
+		log += " --> удаляем узел";
+		delete node;
 	}
-	if (origColor == 'b') {
-		deleteBalanceRb(root, x);
-	}
-	delete node;
+	auto timeEnd = chrono::steady_clock::now();
+	return chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
 }
 
 template<typename TreeType>
@@ -260,9 +253,11 @@ void treeInsert(TreeType*& root, int newEl) {
 	}
 }
 
-void insertBalanceRb(RbTree*& root, RbTree*& newNode) {
+void insertBalanceRb(RbTree*& root, RbTree*& newNode, string& log) {
 	RbTree* y;
+	log += " --> проверям дерево на дисбаланс";
 	while (newNode->p->color == 'r') {
+		log += " --> деревно не сбалансиравано, выполняем балансировку";
 		if (newNode->p == newNode->p->p->left) {
 			y = newNode->p->p->right;
 			if (y && y->color == 'r') {
@@ -312,10 +307,15 @@ void insertBalanceRb(RbTree*& root, RbTree*& newNode) {
 	while (root->p) {
 		root = root->p;
 	}
+	log += " --> устанавливаем цвет корня - черным";
 	root->color = 'b';
+	log += " --> дерево сбалансировано";
 }
 
-void rbTreeInsert(RbTree*& root, int newEl) {
+int rbTreeInsert(RbTree*& root, int newEl, string& log) {
+	auto timeStart = chrono::steady_clock::now();
+
+	bool check = true;
 	RbTree* y = NULL, * x = root;
 	RbTree* newNode = new RbTree;
 	newNode->data = newEl;
@@ -328,74 +328,95 @@ void rbTreeInsert(RbTree*& root, int newEl) {
 			x = x->right;
 		}
 	}
+	log += " --> находим предка для нового элемента ";
 	newNode->p = y;
 	if (!y) {
 		root = newNode;
-		return;
+		log += " --> элементов в дереве нет, теперь новый элемент - корень";
+		check = false;
 	}
 	else if (newEl < y->data) {
 		y->left = newNode;
+		log += " --> устанавливаем новый элемент левым потомком" ;
 	}
 	else{
 		y->right = newNode;
+		log += " --> устанавливаем новый элемент правым потомком";
 	}
-	newNode->left = NULL;
-	newNode->right = NULL;
-	newNode->color = 'r';
-	insertBalanceRb(root, newNode);
-	
+	if(check){
+		newNode->left = NULL;
+		newNode->right = NULL;
+		newNode->color = 'r';
+		insertBalanceRb(root, newNode, log);
+	}
+	auto timeEnd = chrono::steady_clock::now();
+
+	return chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
 }
 
-
-RbTree* createRbTree() {
-	RbTree* RbRoot;
-	cout << "Как запонить дерево?";
-	string menu[2] = {"1) Заполнить введенными числами",
-					  "2) Заполнить случаными числами "};
-	int choise = 0;
-	choise = choiseMenu(menu, 8, 0, 1);
-	if (choise){
-		RbRoot = fillRbTree(RbRoot);
-	}
-	else{
-		RbRoot = inputRbTree(RbRoot);
-	}
-	return RbRoot;
-}
-
-RbTree* inputRbTree(RbTree* root) {
+int inputRbTree(RbTree*& root, string& log) {
+	system("cls");
 	string stringArray;
+	cout << "Введите числа через пробел, из них будет формировано дерево" << endl;
 	getline(cin, stringArray);
 	stringArray += ' ';
 	string newInt = "";
+	int leadTime = 0;
 	for (int i = 0; stringArray[i]; i++) {
 		if (isdigit(stringArray[i]) || stringArray[i] == '-') {
 			newInt += stringArray[i];
 		}
 		else if (newInt != "") {
-			rbTreeInsert(root, stoi(newInt));
+			log += " --> вставляем число " + newInt;
+			auto timeStart = chrono::steady_clock::now();
+			rbTreeInsert(root, stoi(newInt), log);
+			auto timeEnd = chrono::steady_clock::now();
+			leadTime += chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
 			newInt = "";
 		}
 	}
-	return root;
+	return leadTime;
 }
 
-RbTree* fillRbTree(RbTree* root) {
-	int N;
-	int c;
+int fillRbTree(RbTree*& root) {
+	system("cls");
+	string log;
+	int N , leadTime = 0;
+	cout << "Введите число элементов" << endl;
 	cin >> N;
 	string newInt = "";
 	srand(time(0));
-	for (int i = 0; i < N; i++) {
+	for (int i = 0, c; i < N; i++) {
 		c = rand() % N;
-		while (findNubmerTree<RbTree>(root, c) != NULL) {
+		while (findNubmerTree<RbTree>(root, c, log) != NULL) {
 			c = rand() % N;
 		};
-		rbTreeInsert(root, c);
+		auto timeStart = chrono::steady_clock::now();
+		rbTreeInsert(root, c, log);
+		auto timeEnd = chrono::steady_clock::now();
+		leadTime += chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
 	}
-	return root;
+	return leadTime;
 }
 
+int createRbTree(RbTree*& RbRoot) {
+	system("cls");
+	string log;
+	string menu[2] = { "1) Заполнить введенными числами",
+						"2) Заполнить случаными числами "};
+	cout << "Как заполнить дерево?";
+	int choise = choiseMenu(menu, 2, 0, 1);
+	int leadTime;
+	switch (choise) {
+	case 0:
+		leadTime = inputRbTree(RbRoot, log);
+		break;
+	case 1:
+		leadTime = fillRbTree(RbRoot);
+		break;
+	}
+	return leadTime;
+}
 
 void printRbTree(RbTree* root, int posX, int posY) {
 	if (root)
@@ -460,114 +481,198 @@ void printRbTree(RbTree* root, int posX, int posY) {
 	}
 }
 
-void printBinTree(BinTree* root, int posX, int posY) {
-	if (root)
-	{
-		if (root->right)
-		{
-			if (root->right->left)
-			{
-				for (int i = 1; i < numberOfNodes(root->right->left, 2); i++) {
-					destCoord.X = posX + 4;
-					destCoord.Y = posY - i;
-					SetConsoleCursorPosition(hStdout, destCoord);
-					cout << '|';
-					cout.flush();
-				}
-				printBinTree(root->right, posX + 4, posY - numberOfNodes(root->right->left, 2));
-			}
-			else
-			{
-				printBinTree(root->right, posX + 4, posY - 1);
-			}
+void generateTasks() {
+	string tasks = "1) Сформировать дерево";
+	string ansvers = "";
+	string keys = "";
+	int numberTasks = 1;
+	int* tasksArr = new int[1];
+	tasksArr[0] = 0;
+	RbTree* RbRoot = NULL;
+	string menu[4] = { "+ Переформировать дерево",
+					   "+ удалить элемент       ",
+					   "+ вставить элемент      ",
+					   "закончить             " };
+	int number, choise = 0;
+	while (choise != 3) {
+		system("cls");
+		cout << tasks;
+		choise = choiseMenu(menu, 4, 0, numberTasks + 1);
+		system("cls");
+		switch (choise) {
+		case 0:
+			tasksArr = (int*)realloc(tasksArr, (numberTasks + 1) * sizeof(int));
+			tasksArr[numberTasks] = 0;
+			numberTasks++;
+			tasks += '\n' + to_string(numberTasks) + ") Переформировать дерево";
+			break;
+		case 1:
+			tasksArr = (int*)realloc(tasksArr, (numberTasks + 1) * sizeof(int));
+			tasksArr[numberTasks] = 1;
+			numberTasks++;
+			cout << "Введите число которое надо удалить" << endl;
+			cin >> number;
+			tasks += '\n' + to_string(numberTasks) + ")  удалить элемент " + to_string(number);
+			break;
+		case 2:
+			tasksArr = (int*)realloc(tasksArr, (numberTasks + 1) * sizeof(int));
+			tasksArr[numberTasks] = 2;
+			numberTasks++;
+			cout << "Введите число которое надо вставить" << endl;
+			cin >> number;
+			tasks += '\n' + to_string(numberTasks) + ")  вставить элемент " + to_string(number);
+			break;
 		}
-		destCoord.X = posX;
-		destCoord.Y = posY;
-		SetConsoleCursorPosition(hStdout, destCoord);
-		if (root->p)
-		{
-			if (root->p->left == root)
-			{
-				cout << "`-->" << root->data << endl;
-			}
-			else
-			{
-				cout << ".-->" << root->data << endl;
-			}
+	}
+	getchar();
+	for (int i = 0; i < numberTasks; i++) {
+		switch (tasksArr[i]) {
+		case 0:
+			ansvers += to_string(i + 1) + ") ";
+			keys += to_string(i + 1) + ") " + to_string(inputRbTree(RbRoot, ansvers)) + " nanosecond: время создания RB дерева" + '\n';
+			ansvers += '\n';
+			break;
+		case 1:
+			ansvers += to_string(i + 1) + ") ";
+			keys += to_string(i + 1) + ") " + to_string(deleteNodeRb(RbRoot, findNubmerTree(RbRoot, number, ansvers), ansvers)) + " nanosecond: время удаления числа из RB дерева" + '\n';
+			ansvers += '\n';
+			break;
+		case 2:
+			ansvers += to_string(i + 1) + ") ";
+			keys += to_string(i + 1) + ") " + to_string(rbTreeInsert(RbRoot, number, ansvers)) + " nanosecond: время вставки числа в RB дерево" + '\n';
+			ansvers += '\n';
+			break;
 		}
-		else
-		{
-			cout << "--->" << root->data << endl;
-		}
-		cout.flush();
-		if (root->left)
-			if (root->left->right)
-			{
-				for (int i = 1; i < numberOfNodes(root->left->right, 2); i++) {
-					destCoord.X = posX + 4;
-					destCoord.Y = posY + i;
-					SetConsoleCursorPosition(hStdout, destCoord);
-					cout << '|';
-					cout.flush();
-				}
-				printBinTree(root->left, posX + 4, posY + numberOfNodes(root->left->right, 2));
-			}
-			else
-			{
-				printBinTree(root->left, posX + 4, posY + 1);
-			}
+	}
+	fstream file;
+	file.open("output_task.txt");
+	if (file.is_open()) {
+		file << tasks;
+		file.close();
+	}
+	file.open("output_key.txt");
+	if (file.is_open()) {
+		file << keys;
+		file.close();
+	}
+	file.open("output_ans.txt");
+	if (file.is_open()) {
+		file << ansvers;
+		file.close();
 	}
 }
 
+template <typename TreeType>
+int findTime(TreeType* root, int number) {
+	string log = "";
+	auto timeStart = chrono::steady_clock::now();
+	findNubmerTree<TreeType>(root, number, log);
+	auto timeEnd = chrono::steady_clock::now();
+	return chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
+}
+
+bool travel(RbTree* root, int needHeight, int currectHeight) {
+	if (root->color == 'r' && (root->right && root->right->color == 'r') && (root->left && root->left->color == 'r')) {
+		return false;
+	}
+	if (root && root->right && root->left) {
+		return travel(root->right, needHeight, root->color == 'b' ? currectHeight + 1 : currectHeight) * travel(root->left, needHeight, root->color == 'b' ? currectHeight + 1 : currectHeight);
+	}
+	else if(root && root->right) {
+		return travel(root->right, needHeight, root->color == 'b' ? currectHeight + 1 : currectHeight);
+	}
+	else if (root && root->left) {
+		return travel(root->left, needHeight, root->color == 'b' ? currectHeight + 1 : currectHeight);
+	}
+	else if (root){
+		if ((root->color == 'b' ? currectHeight + 1 : currectHeight) != needHeight) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	return true;
+}
+
+int checkRbBalance(RbTree* root) {
+	RbTree* node = root;
+	int blackHeight = 0;
+	auto timeStart = chrono::steady_clock::now();
+	while (node) {
+		if (node->color == 'b') {
+			blackHeight++;
+		}
+		if (node->right) {
+			node = node->right;
+		}
+		else {
+			node = node->left;
+		}
+	}
+	bool check = (root->color == 'b' && travel(root, blackHeight, 0));
+	auto timeEnd = chrono::steady_clock::now();
+	if (check) {
+		cout << "Дерево сбалансированно" << endl;
+	}
+	else {
+		cout << "Дерево не сбалансированно" << endl;
+	}
+	return chrono::duration_cast<chrono::nanoseconds>(timeEnd - timeStart).count();
+}
+
 int main(){
-	BinTree* BinRoot = NULL;
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 	RbTree* RbRoot = NULL;
-	string menu[8] = {"1) Cформировать Красно-черное дерево                   ",
-					  "2) Вывести Красно-черное дерево                        ",
-					  "3) удалить элемент                                     ",
-					  "4) вставить элемент                                    ",
-					  "5) Найти элемент элемент                               ",
-					  "6) Определенить скорость проверки на сбалансированность",
-					  "7) Сгенерировать задания                               ",
-					  "0) Назад                                               "};
+	string log = "";
+	string menu[8] = {"1) Cформировать Красно-черное дерево",
+					  "2) Вывести Красно-черное дерево     ",
+					  "3) удалить элемент                  ",
+					  "4) вставить элемент                 ",
+					  "5) Время поиска элемент             ",
+					  "6) Определить сбалансированность    ",
+					  "7) Сгенерировать задания            ",
+					  "0) Назад                            "};
 	int number, choise = 0;
 	while (choise != 7) {
+		system("cls");
 		choise = choiseMenu(menu, 8, 0, 0);
+		system("cls");
 		switch (choise) {
 			case 0:
-				RbRoot = createRbTree();
+				cout << createRbTree(RbRoot) << " nanosecond: время создания RB дерева";
 				break;
 			case 1:
 				printRbTree(RbRoot, 0, RbRoot->right ? numberOfNodes(RbRoot->right, 2) : 2);
 				break;
 			case 2:
+				cout << " Введите число которые хотите удалить " << endl;
 				cin >> number;
-				deleteNodeRb(RbRoot, findNubmerTree(RbRoot, number));
+				cout << deleteNodeRb(RbRoot, findNubmerTree(RbRoot, number, log), log) << " nanosecond: время удаления числа из RB дерева";
 				break;
 			case 3:
+				cout << " Введите число которые хотите вставить " << endl;
 				cin >> number;
-				rbTreeInsert(RbRoot, number);
+				cout << rbTreeInsert(RbRoot, number, log) << " nanosecond: время добавления числа в RB дерево";
 				break;
 			case 4:
+				cout << " Введите число которые хотите найти " << endl;
 				cin >> number;
-				cout << findNubmerTree(RbRoot, number) ? "такой элемент есть" : "такого элемента нет";
+				cout << findTime<RbTree>(RbRoot, number) << " nanosecond: время поиска числа в RB дереве";
 				break;
 			case 5:
-				cin >> number;
-				cout << findNubmerTree(RbRoot, number) ? "такой элемент есть" : "такого элемента нет";
+				cout << checkRbBalance(RbRoot) << " nanosecond: время проверки сбалансированности";
 				break;
 			case 6:
-
+				generateTasks();
 				break;
 		}
+		if (choise < 6) {
+			getchar();
+			getchar();
+		}
 	}
-	//root = fillRbTree(root);
-	//RbTree* f = findNubmerTree(root, 14);
-	////deleteNodeRb(root, findNubmerTree(root, 14));
-	//printRbTree(root, 0, numberOfNodes(root->right, 2));
-	//deleteNodeRb(root, findNubmerTree(root, 14));
-	//printRbTree(root, 30, numberOfNodes(root->right, 2));
-	//getchar();
 }
 
 int choiseMenu(string* menu, int countEl, int startX, int startY) {
